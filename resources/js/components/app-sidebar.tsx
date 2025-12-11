@@ -83,7 +83,7 @@ export function AppSidebar() {
             icon: BookPlus,
         },
         {
-            title: 'Catatan Pasien',
+            title: 'Catatan Layanan Pasien',
             href: `${prefix}/catatan-layanan`,
             icon: ClipboardList,
         },
@@ -91,11 +91,6 @@ export function AppSidebar() {
             title: 'Pembayaran',
             href: `${prefix}/pembayaran`,
             icon: CreditCard,
-        },
-        {
-            title: 'Kelola Admin',
-            href: `${prefix}/kelola-admin`,
-            icon: UserRoundPlus,
         },
     ];
 
@@ -107,7 +102,8 @@ export function AppSidebar() {
                 item.title !== 'Antrian' &&
                 item.title !== 'Tambah Layanan' &&
                 item.title !== 'Pembayaran' &&
-                item.title !== 'Daftar Obat',
+                item.title !== 'Daftar Obat' &&
+                item.title !== 'Catatan Pasien',
         );
     }
 
@@ -117,7 +113,8 @@ export function AppSidebar() {
                 item.title !== 'Pasien' &&
                 item.title !== 'Kelola Admin' &&
                 item.title !== 'Antrian' &&
-                item.title !== 'Pembayaran',
+                item.title !== 'Pembayaran' &&
+                item.title !== 'Daftar Obat',
         );
     }
 
@@ -167,6 +164,11 @@ export function AppSidebar() {
 
     let footerNavItems = [
         {
+            title: 'Kelola Admin',
+            href: `${prefix}/kelola-admin`,
+            icon: UserRoundPlus,
+        },
+        {
             title: 'Tambah User',
             href: `${prefix}/tambah-user`,
             icon: UserRoundPlus,
@@ -177,6 +179,19 @@ export function AppSidebar() {
             icon: Settings,
         },
     ];
+
+    if (role === 'super_admin') {
+        footerNavItems = footerNavItems.filter(
+            (item) =>
+                item.title !== 'Tambah User' && item.title !== 'Pengaturan',
+        );
+    }
+
+    if (role === 'admin') {
+        footerNavItems = footerNavItems.filter(
+            (item) => item.title !== 'Kelola Admin',
+        );
+    }
 
     if (role === 'dokter') {
         footerNavItems = footerNavItems.filter(

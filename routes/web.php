@@ -11,7 +11,6 @@ use App\Http\Controllers\DokterCatatanLayananController;
 use App\Http\Controllers\DokterKlinikController;
 use App\Http\Controllers\DokterPasienController;
 use App\Http\Controllers\DokterResepController;
-use App\Http\Controllers\DokterTindakanController;
 use App\Http\Controllers\ResepsionisAntrianController;
 use App\Http\Controllers\ResepsionisKlinikController;
 use App\Http\Controllers\ResepsionisPasienController;
@@ -21,10 +20,10 @@ use App\Http\Controllers\SuperAdminPasienController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', fn() => Inertia::render('welcome'))->name('home');
+Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn() => Inertia::render('dashboard'))->name('dashboard');
+    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
 
     Route::middleware(['auth', 'role:super_admin'])
         ->prefix('super-admin')
@@ -32,10 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->group(function () {
             Route::resource('klinik', SuperAdminKlinikController::class)->only(['index', 'show']);
             Route::resource('pasien', SuperAdminPasienController::class)->only(['index', 'show']);
-            Route::get('/admins/create', [SuperAdminAddAdminController::class, 'create'])->name('admins.create');
-            Route::post('/admins', [SuperAdminAddAdminController::class, 'store'])->name('admins.store');
-            Route::get('/admins', [SuperAdminAddAdminController::class, 'index'])->name('admins.index');
-            Route::resource('kelola-admin', SuperAdminAddAdminController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+            Route::resource('kelola-admin', SuperAdminAddAdminController::class)
+                ->parameters(['kelola-admin' => 'admin'])
+                ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
         });
 
     Route::middleware(['auth', 'role:admin'])
@@ -114,5 +112,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
