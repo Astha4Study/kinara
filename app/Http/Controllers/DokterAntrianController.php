@@ -22,7 +22,7 @@ class DokterAntrianController extends Controller
             abort(404, "Data dokter tidak ditemukan");
         }
 
-        $antrian = Antrian::with(['pasien:id,nama_lengkap'])
+        $antrian = Antrian::with(['pasien:id,nomor_pasien,nama_lengkap'])
             ->where('dokter_id', $dokter->id)
             ->orderBy('nomor_antrian', 'asc')
             ->get()
@@ -30,6 +30,7 @@ class DokterAntrianController extends Controller
                 return [
                     'id' => $a->id,
                     'nomor_antrian' => $a->nomor_antrian,
+                    'nomor_pasien' => $a->pasien?->nomor_pasien ?? '-',
                     'pasien_nama' => $a->pasien?->nama_lengkap ?? '-',
                     'keluhan' => $a->keluhan ?? '-',
                     'status' => $a->status,

@@ -3,13 +3,10 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-type Pasien = {
-    nama_lengkap: string;
-};
-
 type Antrian = {
     id: number;
     nomor_antrian: number;
+    nomor_pasien: number | null;
     pasien_nama: string;
     keluhan: string | null;
     status: string;
@@ -21,7 +18,8 @@ type PageProps = {
 };
 
 const listTable = [
-    'No Antrian',
+    'No',
+    'No Pasien',
     'Nama Pasien',
     'Keluhan',
     'Tanggal Dibuat',
@@ -85,6 +83,10 @@ export default function AntrianIndexDokter() {
                                         >
                                             <td className="px-6 py-4 font-medium text-gray-900">
                                                 {item.nomor_antrian ?? '-'}
+                                            </td>
+
+                                            <td className="px-6 py-4 font-medium text-gray-900">
+                                                {item.nomor_pasien ?? '-'}
                                             </td>
 
                                             <td className="px-6 py-4 font-medium text-gray-900">
