@@ -1,60 +1,13 @@
-import FormPengaturanAdmin from '@/components/form-pengaturan';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import PengaturanKlinikCard from '@/components/pengaturan-klinik-card';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-
-type Klinik = {
-    id: number;
-    punya_apoteker: boolean;
-    punya_server: boolean;
-};
-
-type Props = {
-    klinik: Klinik;
-};
+import { Head } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Pengaturan', href: '/admin/pengaturan/index' },
+    { title: 'Pengaturan', href: '/admin/pengaturan' },
 ];
 
-export default function PengaturanAdminIndex({ klinik }: Props) {
-    const { data, setData, processing, errors } = useForm({
-        punya_apoteker: klinik.punya_apoteker,
-        punya_server: klinik.punya_server,
-    });
-
-    const [showConfirm, setShowConfirm] = useState(false);
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setShowConfirm(true);
-    };
-
-    const confirmSave = () => {
-        setShowConfirm(false);
-
-        router.put('/admin/pengaturan', data, {
-            onSuccess: () =>
-                toast.success('Pengaturan klinik berhasil diperbarui'),
-            onError: (errs) => {
-                const msg = Object.values(errs as Record<string, string>)[0];
-                toast.error(msg || 'Gagal memperbarui pengaturan');
-            },
-        });
-    };
-
+export default function PengaturanAdminIndex() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pengaturan" />
@@ -67,37 +20,8 @@ export default function PengaturanAdminIndex({ klinik }: Props) {
                     Anda.
                 </p>
 
-                <div className="overflow-hidden">
-                    <FormPengaturanAdmin
-                        data={data}
-                        setData={setData}
-                        handleSubmit={handleSubmit}
-                        processing={processing}
-                        errors={errors}
-                    />
-                </div>
+                <PengaturanKlinikCard />
             </div>
-
-            <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Simpan perubahan?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Apakah Anda yakin ingin memperbarui pengaturan
-                            klinik ini?
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction
-                            className="bg-emerald-600 transition hover:bg-emerald-700"
-                            onClick={confirmSave}
-                        >
-                            Ya, Simpan
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </AppLayout>
     );
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminAddResepsionisAndApotekerAndDoktorController;
 use App\Http\Controllers\AdminKlinikController;
 use App\Http\Controllers\AdminLayananController;
 use App\Http\Controllers\AdminPengaturanController;
+use App\Http\Controllers\AdminPengaturanKlinikController;
 use App\Http\Controllers\ApotekerKlinikController;
 use App\Http\Controllers\ApotekerObatController;
 use App\Http\Controllers\DokterAntrianController;
@@ -20,10 +21,10 @@ use App\Http\Controllers\SuperAdminPasienController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', fn() => Inertia::render('welcome'))->name('home');
+Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn() => Inertia::render('dashboard'))->name('dashboard');
+    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
 
     Route::middleware(['auth', 'role:super_admin'])
         ->prefix('super-admin')
@@ -52,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->only(['index', 'create', 'edit', 'store', 'update', 'destroy']);
             Route::get('/pengaturan', [AdminPengaturanController::class, 'index'])
                 ->name('pengaturan.index');
-            Route::put('/pengaturan', [AdminPengaturanController::class, 'update'])
+            Route::put('/pengaturan/update', [AdminPengaturanKlinikController::class, 'update'])
                 ->name('pengaturan.update');
         });
 
@@ -114,5 +115,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

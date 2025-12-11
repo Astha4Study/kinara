@@ -5,21 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Klinik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
-class AdminPengaturanController extends Controller
+class AdminPengaturanKlinikController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $user = Auth::user();
-        $klinik = Klinik::where('created_by', $user->id)->first();
-
-        return Inertia::render('Admin/Pengaturan/Index', [
-        'klinik' => $klinik
-    ]);
+        //
     }
 
     /**
@@ -49,7 +43,7 @@ class AdminPengaturanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit()
+    public function edit(string $id)
     {
         //
     }
@@ -57,9 +51,19 @@ class AdminPengaturanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        $user = Auth::user();
+        $klinik = Klinik::where('created_by', $user->id)->firstOrFail();
+
+        $validated = $request->validate([
+            'punya_apoteker' => 'required|boolean',
+            'punya_server' => 'required|boolean',
+        ]);
+
+        $klinik->update($validated);
+
+        return back()->with('success', 'Pengaturan berhasil diperbarui');
     }
 
     /**

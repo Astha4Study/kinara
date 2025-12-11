@@ -51,103 +51,85 @@ export function AppSidebar() {
         }
     })();
 
-    let mainNavItems: NavItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
-        },
-        {
-            title: 'Pasien',
-            href: `${prefix}/pasien`,
-            icon: Users,
-        },
-        {
-            title: 'Antrian',
-            href: `${prefix}/antrian`,
-            icon: Ticket,
-        },
-        {
-            title: 'Klinik',
-            href: `${prefix}/klinik`,
-            icon: Hospital,
-        },
-        {
-            title: 'Daftar Obat',
-            href: `${prefix}/daftar-obat`,
-            icon: Pill,
-        },
-        {
-            title: 'Tambah Layanan',
-            href: `${prefix}/layanan`,
-            icon: BookPlus,
-        },
+    const allMainNavItems: NavItem[] = [
+        { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
+        { title: 'Pasien', href: `${prefix}/pasien`, icon: Users },
+        { title: 'Antrian', href: `${prefix}/antrian`, icon: Ticket },
+        { title: 'Klinik', href: `${prefix}/klinik`, icon: Hospital },
+        { title: 'Daftar Obat', href: `${prefix}/daftar-obat`, icon: Pill },
+        { title: 'Tambah Layanan', href: `${prefix}/layanan`, icon: BookPlus },
         {
             title: 'Catatan Layanan Pasien',
             href: `${prefix}/catatan-layanan`,
             icon: ClipboardList,
         },
-        {
-            title: 'Pembayaran',
-            href: `${prefix}/pembayaran`,
-            icon: CreditCard,
-        },
+        { title: 'Pembayaran', href: `${prefix}/pembayaran`, icon: CreditCard },
     ];
 
-    if (role === 'super_admin') {
-        mainNavItems = mainNavItems.filter(
-            (item) =>
-                item.title !== 'Pasien' &&
-                item.title !== 'Tambah User' &&
-                item.title !== 'Antrian' &&
-                item.title !== 'Tambah Layanan' &&
-                item.title !== 'Pembayaran' &&
-                item.title !== 'Daftar Obat' &&
-                item.title !== 'Catatan Pasien',
-        );
-    }
+    const allFooterNavItems: NavItem[] = [
+        {
+            title: 'Kelola Admin',
+            href: `${prefix}/kelola-admin`,
+            icon: UserRoundPlus,
+        },
+        {
+            title: 'Tambah User',
+            href: `${prefix}/tambah-user`,
+            icon: UserRoundPlus,
+        },
+        { title: 'Pengaturan', href: `${prefix}/pengaturan`, icon: Settings },
+    ];
 
-    if (role === 'admin') {
-        mainNavItems = mainNavItems.filter(
-            (item) =>
-                item.title !== 'Pasien' &&
-                item.title !== 'Kelola Admin' &&
-                item.title !== 'Antrian' &&
-                item.title !== 'Pembayaran' &&
-                item.title !== 'Daftar Obat',
-        );
-    }
+    const rolePermissions: Record<
+        string,
+        { main: string[]; footer: string[] }
+    > = {
+        super_admin: {
+            main: ['Dashboard', 'Klinik'],
+            footer: ['Kelola Admin'],
+        },
+        admin: {
+            main: ['Dashboard', 'Klinik', 'Catatan Layanan Pasien'],
+            footer: ['Tambah User', 'Pengaturan'],
+        },
+        resepsionis: {
+            main: [
+                'Dashboard',
+                'Pasien',
+                'Antrian',
+                'Klinik',
+                'Catatan Layanan Pasien',
+            ],
+            footer: [],
+        },
+        dokter: {
+            main: [
+                'Dashboard',
+                'Pasien',
+                'Antrian',
+                'Klinik',
+                'Catatan Layanan Pasien',
+            ],
+            footer: [],
+        },
+        apoteker: {
+            main: ['Dashboard', 'Klinik', 'Daftar Obat'],
+            footer: [],
+        },
+    };
 
-    if (role === 'resepsionis') {
-        mainNavItems = mainNavItems.filter(
-            (item) =>
-                item.title !== 'Kelola Admin' &&
-                item.title !== 'Tambah Layanan',
-        );
-    }
+    const permissions = rolePermissions[role] ?? {
+        main: allMainNavItems.map((i) => i.title),
+        footer: allFooterNavItems.map((i) => i.title),
+    };
 
-    if (role === 'dokter') {
-        mainNavItems = mainNavItems.filter(
-            (item) =>
-                item.title !== 'Tambah User' &&
-                item.title !== 'Kelola Admin' &&
-                item.title !== 'Tambah Layanan' &&
-                item.title !== 'Pembayaran' &&
-                item.title !== 'Daftar Obat',
-        );
-    }
+    const mainNavItems = allMainNavItems.filter((item) =>
+        permissions.main.includes(item.title),
+    );
 
-    if (role === 'apoteker') {
-        mainNavItems = mainNavItems.filter(
-            (item) =>
-                item.title !== 'Tambah User' &&
-                item.title !== 'Kelola Admin' &&
-                item.title !== 'Tambah Layanan' &&
-                item.title !== 'Pasien' &&
-                item.title !== 'Catatan Pasien' &&
-                item.title !== 'Pembayaran',
-        );
-    }
+    const footerNavItems = allFooterNavItems.filter((item) =>
+        permissions.footer.includes(item.title),
+    );
 
     const footerNavRepoItems: NavItem[] = [
         {
@@ -161,51 +143,6 @@ export function AppSidebar() {
             icon: BookOpen,
         },
     ];
-
-    let footerNavItems = [
-        {
-            title: 'Kelola Admin',
-            href: `${prefix}/kelola-admin`,
-            icon: UserRoundPlus,
-        },
-        {
-            title: 'Tambah User',
-            href: `${prefix}/tambah-user`,
-            icon: UserRoundPlus,
-        },
-        {
-            title: 'Pengaturan',
-            href: `${prefix}/pengaturan`,
-            icon: Settings,
-        },
-    ];
-
-    if (role === 'super_admin') {
-        footerNavItems = footerNavItems.filter(
-            (item) =>
-                item.title !== 'Tambah User' && item.title !== 'Pengaturan',
-        );
-    }
-
-    if (role === 'admin') {
-        footerNavItems = footerNavItems.filter(
-            (item) => item.title !== 'Kelola Admin',
-        );
-    }
-
-    if (role === 'dokter') {
-        footerNavItems = footerNavItems.filter(
-            (item) =>
-                item.title !== 'Tambah User' && item.title !== 'Pengaturan',
-        );
-    }
-
-    if (role === 'apoteker') {
-        footerNavItems = footerNavItems.filter(
-            (item) =>
-                item.title !== 'Tambah User' && item.title !== 'Pengaturan',
-        );
-    }
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -227,6 +164,7 @@ export function AppSidebar() {
 
             <SidebarFooter>
                 <NavFooter items={footerNavItems} className="mt-auto" />
+                <NavFooter items={footerNavRepoItems} className="mt-2" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
