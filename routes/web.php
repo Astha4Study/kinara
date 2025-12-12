@@ -12,6 +12,8 @@ use App\Http\Controllers\DokterCatatanLayananController;
 use App\Http\Controllers\DokterKlinikController;
 use App\Http\Controllers\DokterPasienController;
 use App\Http\Controllers\DokterResepController;
+use App\Http\Controllers\DokterStoreFinalController;
+use App\Http\Controllers\DokterTanganiController;
 use App\Http\Controllers\ResepsionisAntrianController;
 use App\Http\Controllers\ResepsionisKlinikController;
 use App\Http\Controllers\ResepsionisPasienController;
@@ -90,15 +92,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('catatan-layanan.index');
             Route::get('catatan-layanan/{id}', [DokterCatatanLayananController::class, 'show'])
                 ->name('catatan-layanan.show');
-            Route::get('antrian/{antrian}/tangani', [DokterCatatanLayananController::class, 'create'])
+            Route::get('antrian/{antrian}/tangani', [DokterTanganiController::class, 'create'])
                 ->name('tangani.create');
             Route::post('antrian/{antrian}/tangani', [DokterCatatanLayananController::class, 'store'])
                 ->name('tangani.store');
-            Route::post('/antrian/{antrian}/tindakan/temp', [DokterCatatanLayananController::class, 'storeTemp'])
-                ->name('tindakan.temp');
-            Route::get('/antrian/{antrian}/resep/create', [DokterResepController::class, 'create'])
+            Route::get('antrian/{antrian}/resep/create', [DokterResepController::class, 'create'])
                 ->name('resep.create');
-            Route::post('/resep/store-final', [DokterResepController::class, 'storeFinal'])
+            Route::post('resep/store-final', [DokterStoreFinalController::class, 'storeFinal'])
                 ->name('resep.store-final');
         });
 

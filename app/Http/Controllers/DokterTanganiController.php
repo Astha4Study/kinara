@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Antrian;
-use App\Models\Obat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class DokterResepController extends Controller
+class DokterTanganiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,30 +20,21 @@ class DokterResepController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request, Antrian $antrian)
+    public function create(Antrian $antrian)
     {
-        if (! Auth::check()) {
-            abort(401, 'Unauthorized');
+        $dokter = Auth::user()->dokter;
+
+        if (! $dokter || $antrian->dokter_id !== $dokter->id) {
+            abort(404, 'Antrian tidak ditemukan untuk dokter ini');
         }
 
-        if ($antrian->dokter_id !== Auth::user()->dokter?->id) {
-            abort(403);
-        }
+        $antrian->load('pasien', 'klinik');
 
-        if ($antrian->dokter_id !== Auth::user()->dokter->id) {
-            abort(403, 'Anda tidak berwenang menangani antrian ini.');
-        }
-
-        $klinikId = $antrian->klinik_id;
-        $obat = Obat::where('klinik_id', $klinikId)->get();
-
-        $catatan = $request->all();
-
-        return Inertia::render('Dokter/Resep/Create', [
+        return Inertia::render('Dokter/Tangani/Create', [
             'antrian' => $antrian,
             'pasien' => $antrian->pasien,
-            'obat_list' => $obat,
-            'catatan' => $catatan,
+            'keluhan_utama' => $antrian->keluhan,
+            'punya_server' => $antrian->klinik->punya_server,
         ]);
     }
 

@@ -10,86 +10,104 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/app-layout';
+import { useCatatanLayananStore } from '@/stores/catatan-layanan.store';
 import { BreadcrumbItem } from '@/types';
-import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+type Pasien = {
+    id: number;
+    klinik_id: number;
+    nama_lengkap: string;
+    nomor_pasien?: string;
+    nik?: string | number;
+    tanggal_lahir?: string | null;
+    tempat_lahir?: string;
+    no_hp?: string | number;
+    golongan_darah?: string | null;
+    riwayat_penyakit?: string | null;
+    alergi?: string | null;
+};
+
+type Klinik = {
+    id: number;
+};
+
+type Antrian = {
+    id: number;
+    keluhan?: string | null;
+    tanggal_kunjungan?: string;
+};
+
 type Props = {
-    pasien: {
-        id: number;
-        nama_lengkap: string;
-        nomor_pasien: string;
-        nik: number;
-        tanggal_lahir: Date;
-        tempat_lahir: string;
-        no_hp: number;
-        golongan_darah: string;
-        riwayat_penyakit: string;
-        alergi: string;
-    };
-
-    antrian: {
-        id: number;
-        keluhan: string | null;
-        tanggal_kunjungan: string;
-    };
-
+    pasien: Pasien;
+    klinik: Klinik;
+    antrian: Antrian;
     punya_server: number;
 };
 
 export default function TindakanCreateDokter({
-    antrian,
     pasien,
+    klinik,
+    antrian,
     punya_server,
 }: Props) {
+    const {
+        data,
+        setData,
+        reset,
+        setProcessing,
+        setErrors,
+        processing,
+        errors,
+    } = useCatatanLayananStore();
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const { data, setData, processing, post, reset, errors } = useForm({
-        keluhan_utama: antrian.keluhan || '',
-        detail_keluhan: '',
-        diagnosa: '',
-        tindakan: '',
-        catatan_lain: '',
-    });
 
-    const submitToServer = () => {
-        post(`/dokter/antrian/${antrian.id}/tangani`, {
-            onSuccess: () => {
-                reset();
-                if (punya_server == 1) {
-                    toast.success('Data berhasil disimpan');
-                }
-            },
-        });
-    };
+    useEffect(() => {
+        if (!antrian?.id || !pasien?.id || !klinik?.id) return;
+
+        setData('antrian_id', antrian.id);
+        setData('pasien_id', pasien.id);
+        setData('klinik_id', klinik.id);
+    }, [antrian?.id, pasien?.id, klinik?.id]);
+
+    useEffect(() => {
+        setData('keluhan_utama', antrian.keluhan || '');
+    }, [antrian.id]);
+
+    useEffect(() => {
+        setProcessing(false);
+        setErrors({});
+    }, []);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErrors({});
+        setProcessing(true);
 
         if (
-            !data.detail_keluhan.trim() ||
-            !data.diagnosa.trim() ||
-            !data.tindakan.trim()
+            !String(data.detail_keluhan || '').trim() ||
+            !String(data.diagnosa || '').trim() ||
+            !String(data.tindakan || '').trim()
         ) {
-            toast.error('Detail keluhan, diagnosa dan tindakan wajib diisi.');
+            const errs = {
+                general: 'Detail keluhan, diagnosa, dan tindakan wajib diisi.',
+            };
+            setErrors(errs);
+            toast.error(errs.general);
+            setProcessing(false);
             return;
         }
 
         setConfirmOpen(true);
+        setProcessing(false);
     };
 
     const confirmAndSend = () => {
-        setConfirmOpen(false);
-        post(`/dokter/antrian/${antrian.id}/tindakan/temp`, {
-            onSuccess: () => {
-                router.get(
-                    `/dokter/antrian/${antrian.id}/resep/create`,
-                    {},
-                    { replace: false },
-                );
-            },
-            onError: (errs) => toast.error(Object.values(errs)[0]),
-        });
+        setProcessing(true);
+
+        router.visit(`/dokter/antrian/${antrian.id}/resep/create`);
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -112,13 +130,13 @@ export default function TindakanCreateDokter({
 
                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
                     <FormCreateCatatanLayanan
+                        pasien={pasien}
+                        punyaServer={punya_server}
                         data={data}
                         setData={setData}
                         handleSubmit={handleSubmit}
                         processing={processing}
                         errors={errors}
-                        pasien={pasien}
-                        punyaServer={punya_server}
                     />
                 </div>
 

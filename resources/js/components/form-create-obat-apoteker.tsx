@@ -68,7 +68,9 @@ const FormCreateObatApoteker: React.FC<FormCreateObatApotekerProps> = ({
                             type="number"
                             name="stok"
                             value={data.stok}
-                            onChange={handleChange}
+                            onChange={(e) =>
+                                setData('stok', Number(e.target.value))
+                            }
                             className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm"
                         />
                         {errors.stok && (
