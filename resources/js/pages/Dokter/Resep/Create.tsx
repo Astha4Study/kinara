@@ -5,6 +5,7 @@ import { useResepStore } from '@/stores/resep.store';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useEffect } from 'react';
+import { route } from 'ziggy-js';
 
 type Props = {
     pasien: { id: number; nama_lengkap: string; nomor_pasien?: string };
@@ -18,18 +19,31 @@ type Props = {
 };
 
 export default function ResepCreateDokter({ pasien, obat_list }: Props) {
-    const { obat_list: resepObat, reset } = useResepStore();
+    const { obat_list: resepObat, reset: resetResep } = useResepStore();
     const { data: catatan } = useCatatanLayananStore();
 
-    useEffect(() => reset(), []);
+    useEffect(() => {
+        resetResep();
+    }, []);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const url = route('dokter.resep.store-final');
+        console.log(url);
+
         router.post(
-            '/dokter/resep/store-final',
-            { catatan, obat: resepObat },
+            url,
             {
-                onSuccess: () => router.visit('/dokter/catatan-layanan'),
+                catatan,
+                obat: resepObat,
+                pasien_id: pasien.id,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    router.visit('/dokter/pasien');
+                },
             },
         );
     };
@@ -46,6 +60,7 @@ export default function ResepCreateDokter({ pasien, obat_list }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Siapkan Resep" />
+
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-gray-900">

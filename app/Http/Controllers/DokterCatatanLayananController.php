@@ -18,7 +18,7 @@ class DokterCatatanLayananController extends Controller
         $user = Auth::user();
         $dokter = $user->dokter;
 
-        if (! $dokter) {
+        if (!$dokter) {
             abort(404, 'Data dokter tidak ditemukan');
         }
 
@@ -35,7 +35,10 @@ class DokterCatatanLayananController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Antrian $antrian) {}
+    public function create(Antrian $antrian)
+    {
+        // 
+    }
 
     /**
      * Store a newly created resource in storage.

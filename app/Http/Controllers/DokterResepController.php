@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Antrian;
+use App\Models\CatatanLayanan;
 use App\Models\Obat;
+use App\Models\Resep;
+use App\Models\ResepDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DokterResepController extends Controller
@@ -23,13 +27,13 @@ class DokterResepController extends Controller
      */
     public function create(Request $request, Antrian $antrian)
     {
-        if (! Auth::check()) {
+        if (!Auth::check()) {
             abort(401, 'Unauthorized');
         }
 
         $dokter = Auth::user()->dokter;
 
-        if (! $dokter) {
+        if (!$dokter) {
             abort(403, 'Profil dokter tidak ditemukan.');
         }
 

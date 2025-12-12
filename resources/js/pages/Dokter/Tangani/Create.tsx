@@ -65,12 +65,12 @@ export default function TindakanCreateDokter({
     const [confirmOpen, setConfirmOpen] = useState(false);
 
     useEffect(() => {
-        if (!antrian?.id || !pasien?.id || !klinik?.id) return;
-
+        reset();
         setData('antrian_id', antrian.id);
         setData('pasien_id', pasien.id);
         setData('klinik_id', klinik.id);
-    }, [antrian?.id, pasien?.id, klinik?.id]);
+        setData('keluhan_utama', antrian.keluhan ?? '');
+    }, [antrian.id, pasien.id, klinik.id]);
 
     useEffect(() => {
         setData('keluhan_utama', antrian.keluhan || '');
