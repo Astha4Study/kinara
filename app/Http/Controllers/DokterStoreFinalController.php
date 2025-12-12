@@ -33,6 +33,15 @@ class DokterStoreFinalController extends Controller
 
         $sumberInput = $klinik->punya_server ? 'server' : 'manual';
 
+        dd([
+            'auth_user' => Auth::user(),
+            'dokter_relation' => Auth::user()->dokter ?? 'NULL',
+            'dokter_id' => Auth::user()->dokter->id ?? 'NULL',
+            'catatan' => $cat,
+            'obatInput' => $obatInput,
+            'antrian' => $antrian,
+        ]);
+
         DB::transaction(function () use ($cat, $obatInput, $antrian, $sumberInput) {
 
             // 1. Simpan catatan layanan

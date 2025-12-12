@@ -27,24 +27,23 @@ class DokterResepController extends Controller
             abort(401, 'Unauthorized');
         }
 
-        if ($antrian->dokter_id !== Auth::user()->dokter?->id) {
-            abort(403);
+        $dokter = Auth::user()->dokter;
+
+        if (! $dokter) {
+            abort(403, 'Profil dokter tidak ditemukan.');
         }
 
-        if ($antrian->dokter_id !== Auth::user()->dokter->id) {
+        if ($antrian->dokter_id !== $dokter->id) {
             abort(403, 'Anda tidak berwenang menangani antrian ini.');
         }
 
-        $klinikId = $antrian->klinik_id;
-        $obat = Obat::where('klinik_id', $klinikId)->get();
-
-        $catatan = $request->all();
+        $obat = Obat::where('klinik_id', $antrian->klinik_id)->get();
 
         return Inertia::render('Dokter/Resep/Create', [
             'antrian' => $antrian,
             'pasien' => $antrian->pasien,
             'obat_list' => $obat,
-            'catatan' => $catatan,
+            'catatan' => $request->all(),
         ]);
     }
 
