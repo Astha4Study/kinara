@@ -18,7 +18,7 @@ class Resep extends Model
         'dokter_id',
         'apoteker_id',
         'status',
-        'total_harga'
+        'total_harga',
     ];
 
     public function klinik()
@@ -50,5 +50,9 @@ class Resep extends Model
     {
         return $this->belongsTo(CatatanLayanan::class);
     }
-}
 
+    public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class);
+    }
+}

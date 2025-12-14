@@ -19,6 +19,7 @@ import {
     ClipboardList,
     CreditCard,
     Folder,
+    HandCoins,
     Hospital,
     LayoutGrid,
     Pill,
@@ -69,6 +70,11 @@ export function AppSidebar() {
             href: `${prefix}/resep-masuk`,
             icon: ClipboardList,
         },
+        {
+            title: 'Penyerahan Obat',
+            href: `${prefix}/penyerahan-obat`,
+            icon: HandCoins,
+        },
     ];
 
     const allFooterNavItems: NavItem[] = [
@@ -103,7 +109,7 @@ export function AppSidebar() {
                 'Pasien',
                 'Antrian',
                 'Klinik',
-                'Catatan Layanan Pasien',
+                'Pembayaran',
             ],
             footer: [],
         },
@@ -118,7 +124,13 @@ export function AppSidebar() {
             footer: [],
         },
         apoteker: {
-            main: ['Dashboard', 'Klinik', 'Daftar Obat', 'Resep Masuk'],
+            main: [
+                'Dashboard',
+                'Klinik',
+                'Daftar Obat',
+                'Resep Masuk',
+                'Penyerahan Obat',
+            ],
             footer: [],
         },
     };

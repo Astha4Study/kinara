@@ -33,7 +33,6 @@ export default function DaftarObatIndexApoteker() {
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    /* ---------- fungsi-fungsi checkbox & delete ---------- */
     const toggleSelect = (id: number) =>
         setSelectedIds((prev) =>
             prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
@@ -54,7 +53,7 @@ export default function DaftarObatIndexApoteker() {
         setSelectedIds([]);
     };
 
-    /* ---------- filter & format ---------- */
+
     const filteredDaftarObat = obat.filter((o) =>
         o.nama_obat.toLowerCase().includes(searchQuery.toLowerCase()),
     );

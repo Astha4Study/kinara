@@ -19,6 +19,7 @@ use App\Http\Controllers\DokterTanganiController;
 use App\Http\Controllers\ResepsionisAntrianController;
 use App\Http\Controllers\ResepsionisKlinikController;
 use App\Http\Controllers\ResepsionisPasienController;
+use App\Http\Controllers\ResepsionisPembayaranController;
 use App\Http\Controllers\SuperAdminAddAdminController;
 use App\Http\Controllers\SuperAdminKlinikController;
 use App\Http\Controllers\SuperAdminPasienController;
@@ -76,6 +77,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('antrian', ResepsionisAntrianController::class)
                 ->parameters(['antrian' => 'antrian'])
                 ->only(['index', 'store', 'edit', 'update', 'destroy']);
+            Route::get('pembayaran/{resep}/proses-bayar', [ResepsionisPembayaranController::class, 'create'])
+                ->name('pembayaran.proses-bayar');
+            Route::post('pembayaran/{resep}', [ResepsionisPembayaranController::class, 'store'])
+                ->name('pembayaran.store');
+            Route::get('pembayaran', [ResepsionisPembayaranController::class, 'index'])
+                ->name('pembayaran.index');
         });
 
     Route::middleware(['auth', 'role:dokter'])
