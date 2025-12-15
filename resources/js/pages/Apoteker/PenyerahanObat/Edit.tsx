@@ -51,24 +51,21 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function PenyerahanObatCreateApoteker({ resep }: Props) {
-    const { post, processing } = useForm({});
-    const [openConfirm, setOpenConfirm] = useState(false);
+    const { patch, processing } = useForm({});
+    const [open, setOpen] = useState(false);
 
-    const handleConfirmSubmit = () => {
-        post(route('apoteker.penyerahan-obat.store', resep.id), {
-            preserveScroll: true,
-            onSuccess: () => {
-                setOpenConfirm(false);
+    const updateStatus = () => {
+        setOpen(false);
+        patch(route('apoteker.penyerahan-obat.update', resep.id), {
+            onSuccess: () =>
                 toast.success('Obat berhasil diserahkan', {
                     description: `Resep ${resep.pasien.nomor_pasien} sudah diserahkan ke pasien.`,
-                });
-            },
-            onError: () => {
+                }),
+            onError: () =>
                 toast.error('Penyerahan gagal', {
                     description:
                         'Terjadi kesalahan saat memproses penyerahan obat.',
-                });
-            },
+                }),
         });
     };
 
@@ -92,7 +89,7 @@ export default function PenyerahanObatCreateApoteker({ resep }: Props) {
                         <button
                             type="button"
                             disabled={processing}
-                            onClick={() => setOpenConfirm(true)}
+                            onClick={() => setOpen(true)}
                             className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
                         >
                             Konfirmasi Penyerahan Obat
@@ -102,7 +99,7 @@ export default function PenyerahanObatCreateApoteker({ resep }: Props) {
             </div>
 
             {/* Dialog Konfirmasi */}
-            <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
+            <AlertDialog open={open} onOpenChange={setOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
@@ -118,7 +115,7 @@ export default function PenyerahanObatCreateApoteker({ resep }: Props) {
                             Batal
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleConfirmSubmit}
+                            onClick={updateStatus}
                             disabled={processing}
                             className="bg-emerald-600 hover:bg-emerald-700"
                         >
