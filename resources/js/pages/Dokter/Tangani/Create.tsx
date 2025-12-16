@@ -86,27 +86,32 @@ export default function TindakanCreateDokter({
         setErrors({});
         setProcessing(true);
 
-        if (
-            !String(data.detail_keluhan || '').trim() ||
-            !String(data.diagnosa || '').trim() ||
-            !String(data.tindakan || '').trim()
-        ) {
-            const errs = {
-                general: 'Detail keluhan, diagnosa, dan tindakan wajib diisi.',
-            };
-            setErrors(errs);
-            toast.error(errs.general);
+        if (punya_server === 1) {
+            if (
+                !String(data.detail_keluhan || '').trim() ||
+                !String(data.diagnosa || '').trim() ||
+                !String(data.tindakan || '').trim()
+            ) {
+                const errs = {
+                    general:
+                        'Detail keluhan, diagnosa, dan tindakan wajib diisi.',
+                };
+                setErrors(errs);
+                toast.error(errs.general);
+                setProcessing(false);
+                return;
+            }
+
+            setConfirmOpen(true);
             setProcessing(false);
             return;
         }
 
-        setConfirmOpen(true);
-        setProcessing(false);
+        router.visit(`/dokter/antrian/${antrian.id}/resep/create`);
     };
 
     const confirmAndSend = () => {
         setProcessing(true);
-
         router.visit(`/dokter/antrian/${antrian.id}/resep/create`);
     };
 

@@ -22,7 +22,7 @@ const listTable = [
     'No Antrian',
     'Nomor Pasien',
     'Nama Pasien',
-    'Nama Dokter',
+    'Penanggung Jawab',
     'Keluhan',
     'Tanggal Dibuat',
     'Status',

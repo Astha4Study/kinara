@@ -47,6 +47,30 @@ class ResepsionisPembayaranController extends Controller
      */
     public function create($id)
     {
+        // 
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request, $id)
+    {
+        // 
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
         $resep = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien,nik,riwayat_penyakit',
             'dokter:id,name',
@@ -55,7 +79,7 @@ class ResepsionisPembayaranController extends Controller
             'catatanLayanan:id,diagnosa',
         ])->findOrFail($id);
 
-        return Inertia::render('Resepsionis/Pembayaran/Create', [
+        return Inertia::render('Resepsionis/Pembayaran/Edit', [
             'resep' => [
                 'id' => $resep->id,
                 'total_harga' => $resep->total_harga,
@@ -83,9 +107,9 @@ class ResepsionisPembayaranController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Update the specified resource in storage.
      */
-    public function store(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         $request->validate([
             'uang_dibayar' => 'required|numeric|min:0',
@@ -106,25 +130,27 @@ class ResepsionisPembayaranController extends Controller
 
             $kembalian = $uang - $total;
 
-            // 1. Pembayaran utama
-            $pembayaran = Pembayaran::create([
-                'resep_id' => $resep->id,
+            // ✅ Ambil pembayaran yang sudah ada (status pending)
+            $pembayaran = Pembayaran::where('resep_id', $resep->id)
+                ->where('status', 'pending')
+                ->firstOrFail();
+
+            // Update pembayaran utama
+            $pembayaran->update([
                 'resepsionis_id' => auth()->id(),
                 'total_bayar' => $total,
                 'status' => 'lunas',
             ]);
 
-            // 2. Detail pembayaran
-            $pembayaran->detail()->create([
-                'uang_dibayar' => $uang,
-                'kembalian' => $kembalian,
-                'metode_pembayaran' => $request->metode_pembayaran ?? 'cash',
-            ]);
-
-            // 3. Update pembayaran
-            $pembayaran->update([
-                'status' => 'lunas',
-            ]);
+            // Update / buat detail pembayaran
+            $pembayaran->detail()->updateOrCreate(
+                ['pembayaran_id' => $pembayaran->id],
+                [
+                    'uang_dibayar' => $uang,
+                    'kembalian' => $kembalian,
+                    'metode_pembayaran' => $request->metode_pembayaran ?? 'cash',
+                ]
+            );
 
             return redirect()
                 ->route('resepsionis.pembayaran.index')
@@ -136,29 +162,6 @@ class ResepsionisPembayaranController extends Controller
         });
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.

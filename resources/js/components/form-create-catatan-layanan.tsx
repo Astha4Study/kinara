@@ -283,11 +283,29 @@ const FormCreateCatatanLayanan: React.FC<Props> = ({
                         </div>
                     </div>
                 ) : (
-                    <div className="py-6">
-                        <p className="mb-3 text-sm text-gray-600">
-                            Klinik ini tidak punya server — catat manual. Hanya
-                            nomor pasien, nama, dan keluhan utama yang tersimpan
-                            otomatis.
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center shadow-sm">
+                        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+                            <svg
+                                className="h-6 w-6 text-emerald-600"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.79 1.732-3L13.732 4c-.77-1.79-2.502-1.79-3.268 0L3.34 16c-.77 1.79.192 3 1.732 3z"
+                                />
+                            </svg>
+                        </div>
+                        <h3 className="mb-1 text-sm font-semibold text-emerald-800">
+                            Mode Tanpa Server
+                        </h3>
+                        <p className="text-sm text-emerald-700">
+                            Data rekam medis lengkap dicatat secara manual.
+                            Informasi yang tersimpan otomatis hanya nomor
+                            pasien, nama, dan keluhan utama.
                         </p>
                     </div>
                 )}

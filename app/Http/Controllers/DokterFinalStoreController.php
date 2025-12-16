@@ -21,7 +21,7 @@ class DokterFinalStoreController extends Controller
 
         // contoh bila butuh object
         $antrian = Antrian::find($cat['antrian_id'] ?? 0);
-        if (! $antrian) {
+        if (!$antrian) {
             return Inertia::render('Dokter/Klinik/Index', ['error' => 'Antrian tidak ditemukan']);
         }
 
@@ -57,7 +57,7 @@ class DokterFinalStoreController extends Controller
             $total = 0;
             foreach ($obatInput as $item) {
                 $obat = Obat::find($item['obat_id'] ?? 0);
-                if (! $obat) {
+                if (!$obat) {
                     continue;
                 }
 

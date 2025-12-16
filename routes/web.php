@@ -78,10 +78,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('antrian', ResepsionisAntrianController::class)
                 ->parameters(['antrian' => 'antrian'])
                 ->only(['index', 'store', 'edit', 'update', 'destroy']);
-            Route::get('pembayaran/{resep}/proses-bayar', [ResepsionisPembayaranController::class, 'create'])
+            Route::get('pembayaran/{resep}/proses-bayar', [ResepsionisPembayaranController::class, 'edit'])
                 ->name('pembayaran.proses-bayar');
-            Route::post('pembayaran/{resep}', [ResepsionisPembayaranController::class, 'store'])
-                ->name('pembayaran.store');
+            Route::put('pembayaran/{resep}', [ResepsionisPembayaranController::class, 'update'])
+                ->name('pembayaran.update');
             Route::get('pembayaran', [ResepsionisPembayaranController::class, 'index'])
                 ->name('pembayaran.index');
         });

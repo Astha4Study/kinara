@@ -28,6 +28,8 @@ class Klinik extends Model
         'rating',
         'kapasitas_total',
         'kapasitas_tersedia',
+        'punya_resepsionis',
+        'punya_dokter',
         'punya_apoteker',
         'punya_server',
         'created_by',
