@@ -21,6 +21,7 @@ use App\Http\Controllers\ResepsionisAntrianController;
 use App\Http\Controllers\ResepsionisKlinikController;
 use App\Http\Controllers\ResepsionisPasienController;
 use App\Http\Controllers\ResepsionisPembayaranController;
+use App\Http\Controllers\ResepsionisStoreAntrianAndPemeriksaanFisikController;
 use App\Http\Controllers\SuperAdminAddAdminController;
 use App\Http\Controllers\SuperAdminKlinikController;
 use App\Http\Controllers\SuperAdminPasienController;
@@ -77,7 +78,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('antrian.createForPasien');
             Route::resource('antrian', ResepsionisAntrianController::class)
                 ->parameters(['antrian' => 'antrian'])
-                ->only(['index', 'store', 'edit', 'update', 'destroy']);
+                ->only(['index', 'edit', 'update', 'destroy']);
+            Route::post(
+                'antrian/create/pasien/{pasien}',
+                [ResepsionisStoreAntrianAndPemeriksaanFisikController::class, 'store']
+            )->name('antrian.store');
             Route::get('pembayaran/{resep}/proses-bayar', [ResepsionisPembayaranController::class, 'edit'])
                 ->name('pembayaran.proses-bayar');
             Route::put('pembayaran/{resep}', [ResepsionisPembayaranController::class, 'update'])

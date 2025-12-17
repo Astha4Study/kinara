@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->integer('suhu_tubuh')->nullable();
             $table->string('tekanan_darah', 10)->nullable();
             $table->text('kondisi_khusus')->nullable();
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

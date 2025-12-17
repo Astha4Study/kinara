@@ -1,7 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 type Antrian = {
     id: number;
@@ -26,6 +27,7 @@ const listTable = [
     'Keluhan',
     'Tanggal Dibuat',
     'Status',
+    'Aksi',
 ];
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -133,6 +135,36 @@ export default function AntrianIndexResepsionis() {
                                                 >
                                                     {item.status}
                                                 </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-700">
+                                                <button
+                                                    onClick={() => {
+                                                        if (
+                                                            confirm(
+                                                                'Yakin membatalkan antrian ini?',
+                                                            )
+                                                        ) {
+                                                            router.prefetch(
+                                                                `/resepsionis/antrian/${item.id}`,
+                                                                {
+                                                                    onSuccess:
+                                                                        () =>
+                                                                            toast.success(
+                                                                                'Antrian dibatalkan',
+                                                                            ),
+                                                                    onError:
+                                                                        () =>
+                                                                            toast.error(
+                                                                                'Gagal membatalkan',
+                                                                            ),
+                                                                },
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700"
+                                                >
+                                                    Batalkan
+                                                </button>
                                             </td>
                                         </tr>
                                     ))

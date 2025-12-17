@@ -17,6 +17,7 @@ class Resep extends Model
         'klinik_id',
         'dokter_id',
         'apoteker_id',
+        'resep_teks',
         'status',
         'total_harga',
     ];

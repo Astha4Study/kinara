@@ -36,8 +36,12 @@ const FormPengaturanKlinikAdmin: React.FC<FormPengaturanKlinikAdminProps> = ({
     };
 
     return (
-        <div className="space-y-6 rounded-xl border border-gray-200 bg-white shadow-sm">
-            <form onSubmit={onSubmit} autoComplete="off" className="p-6">
+        <form
+            onSubmit={onSubmit}
+            autoComplete="off"
+            className="space-y-6 rounded-xl border border-gray-200 bg-white shadow-sm"
+        >
+            <div className="p-6">
                 <div className="mb-4 border-b border-gray-100 pb-4">
                     <h3 className="text-lg font-semibold text-gray-900">
                         Pengaturan Fitur Klinik
@@ -91,7 +95,7 @@ const FormPengaturanKlinikAdmin: React.FC<FormPengaturanKlinikAdminProps> = ({
                         )}
                     </div>
                 </div>
-            </form>
+            </div>
             {/* Actions */}
             <div className="rounded-b-xl border-t border-gray-200 bg-gray-50 px-6 py-4">
                 <div className="flex items-center justify-end">
@@ -104,7 +108,7 @@ const FormPengaturanKlinikAdmin: React.FC<FormPengaturanKlinikAdminProps> = ({
                     </button>
                 </div>
             </div>
-        </div>
+        </form>
     );
 };
 
