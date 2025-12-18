@@ -77,15 +77,6 @@ const FormCreateCatatanLayanan: React.FC<Props> = ({
             {/* Data Pasien */}
             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
                 <div className="p-6">
-                    <div className="mb-4">
-                        <h3 className="text-base font-semibold text-gray-800">
-                            Data Pasien
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                            Data lengkap pasien
-                        </p>
-                    </div>
-
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         {/* Nama Lengkap */}
                         <div>
@@ -236,15 +227,6 @@ const FormCreateCatatanLayanan: React.FC<Props> = ({
             {/* Bagian Pemeriksaan Fisik */}
             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
                 <div className="p-6">
-                    <div className="mb-4">
-                        <h3 className="text-base font-semibold text-gray-800">
-                            Pemeriksaan Fisik
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                            Data hasil pemeriksaan fisik pasien
-                        </p>
-                    </div>
-
                     <div className="grid grid-cols-2 gap-4">
                         {/* Berat Badan */}
                         <div>
@@ -288,8 +270,8 @@ const FormCreateCatatanLayanan: React.FC<Props> = ({
                             <input
                                 type="text"
                                 value={
-                                    pemeriksaanFisik?.berat_badan !== null
-                                        ? `${pemeriksaanFisik?.berat_badan} kg`
+                                    pemeriksaanFisik?.suhu_tubuh !== null
+                                        ? `${pemeriksaanFisik?.suhu_tubuh} °C`
                                         : '-'
                                 }
                                 disabled

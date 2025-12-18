@@ -19,17 +19,17 @@ class ApotekerResepMasukController extends Controller
 
         $resep = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien',
-            'dokter:id,name',
+            'dokter.user:id,name',
         ])
             ->where('klinik_id', $user->klinik_id)
             ->whereIn('status', ['pending', 'sedang_dibuat'])
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'id' => $item->id,
                 'pasien_nama' => $item->pasien->nama_lengkap,
                 'nomor_pasien' => $item->pasien->nomor_pasien,
-                'dokter_nama' => $item->dokter->name ?? '-',
+                'dokter_nama' => $item->dokter?->user?->name ?? '-',
                 'status' => $item->status,
                 'total_harga' => $item->total_harga,
                 'created_at' => $item->created_at->toISOString(),
@@ -71,7 +71,7 @@ class ApotekerResepMasukController extends Controller
     {
         $resep = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien,nik,riwayat_penyakit',
-            'dokter:id,name',
+            'pasien.pemeriksaanFisik',
             'catatanLayanan:id,diagnosa',
             'resepDetail.obat:id,nama_obat,satuan,harga',
         ])->findOrFail($id);
@@ -85,17 +85,20 @@ class ApotekerResepMasukController extends Controller
                 'pasien' => [
                     'nama_lengkap' => $resep->pasien->nama_lengkap,
                     'nomor_pasien' => $resep->pasien->nomor_pasien,
-                    'nik' => $resep->pasien->nik,
                     'riwayat_penyakit' => $resep->pasien->riwayat_penyakit,
-                ],
-
-                'dokter' => [
-                    'nama' => $resep->dokter->name ?? '-',
                 ],
 
                 'diagnosa' => $resep->catatanLayanan->diagnosa ?? '-',
 
-                'detail' => $resep->resepDetail->map(fn($d) => [
+                'pemeriksaan_fisik' => [
+                    'berat_badan' => $resep->pasien->pemeriksaanFisik->berat_badan ?? null,
+                    'tinggi_badan' => $resep->pasien->pemeriksaanFisik->tinggi_badan ?? null,
+                    'suhu_tubuh' => $resep->pasien->pemeriksaanFisik->suhu_tubuh ?? null,
+                    'tekanan_darah' => $resep->pasien->pemeriksaanFisik->tekanan_darah ?? null,
+                    'kondisi_khusus' => $resep->pasien->pemeriksaanFisik->kondisi_khusus ?? null,
+                ],
+
+                'detail' => $resep->resepDetail->map(fn ($d) => [
                     'id' => $d->id,
                     'nama_obat' => $d->obat->nama_obat,
                     'jumlah' => $d->jumlah,

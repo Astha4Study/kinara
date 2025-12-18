@@ -30,7 +30,6 @@ export default function ResepCreateDokter({ pasien }: Props) {
                 preserveScroll: true,
                 onSuccess: () => {
                     toast.success('Resep berhasil dikirim ke apotek');
-                    router.visit('/dokter/antrian');
                 },
                 onError: () => {
                     toast.error('Gagal menyimpan resep');

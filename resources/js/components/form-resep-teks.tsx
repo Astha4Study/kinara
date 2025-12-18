@@ -8,7 +8,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -55,7 +54,7 @@ export default function FormResepTeks({
                         </div>
 
                         <div className="mt-4">
-                            <Textarea
+                            <textarea
                                 rows={8}
                                 placeholder={`Contoh:
 R/ Amoxicillin 500 mg
@@ -63,6 +62,7 @@ S 3 dd 1
 Habiskan`}
                                 value={resepTeks}
                                 onChange={(e) => setResepTeks(e.target.value)}
+                                className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400"
                             />
                             {error && (
                                 <p className="mt-1 text-sm text-red-600">

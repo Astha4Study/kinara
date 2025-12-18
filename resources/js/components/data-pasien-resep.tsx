@@ -4,16 +4,13 @@ type Props = {
     pasien: {
         nama_lengkap: string;
         nomor_pasien: string;
-        nik: string;
         riwayat_penyakit: string;
     };
-    dokter: {
-        nama: string;
-    };
+
     diagnosa: string;
 };
 
-export default function DataPasienResep({ pasien, dokter, diagnosa }: Props) {
+export default function DataPasienResep({ pasien, diagnosa }: Props) {
     return (
         <div className="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm">
             <div className="space-y-6 p-6">
@@ -32,10 +29,6 @@ export default function DataPasienResep({ pasien, dokter, diagnosa }: Props) {
                         value={pasien.nomor_pasien}
                     />
                     <Info label="Nama Lengkap" value={pasien.nama_lengkap} />
-
-                    <Info label="NIK" value={pasien.nik} />
-
-                    <Info label="Dokter Pemeriksa" value={dokter.nama} />
                 </div>
 
                 <Highlight

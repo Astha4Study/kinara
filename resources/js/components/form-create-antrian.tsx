@@ -163,63 +163,115 @@ const FormCreateAntrian: React.FC<FormCreateAntrianProps> = ({
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                Berat Badan (kg)
+                                Berat Badan{' '}
+                                <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="number"
-                                value={data.berat_badan || ''}
-                                onChange={(e) =>
-                                    setData('berat_badan', e.target.value)
-                                }
-                                placeholder="Contoh: 65"
-                                className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="number"
+                                    value={data.berat_badan || ''}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value);
+                                        if (!isNaN(val) && val >= 0) {
+                                            setData(
+                                                'berat_badan',
+                                                e.target.value,
+                                            );
+                                        } else if (e.target.value === '') {
+                                            setData('berat_badan', '');
+                                        }
+                                    }}
+                                    placeholder="65"
+                                    className="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm"
+                                    required
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    kg
+                                </span>
+                            </div>
                         </div>
 
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                Tinggi Badan (cm)
+                                Tinggi Badan
                             </label>
-                            <input
-                                type="number"
-                                value={data.tinggi_badan || ''}
-                                onChange={(e) =>
-                                    setData('tinggi_badan', e.target.value)
-                                }
-                                placeholder="Contoh: 170"
-                                className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="number"
+                                    value={data.tinggi_badan || ''}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value);
+                                        if (!isNaN(val) && val >= 0) {
+                                            setData(
+                                                'tinggi_badan',
+                                                e.target.value,
+                                            );
+                                        } else if (e.target.value === '') {
+                                            setData('tinggi_badan', '');
+                                        }
+                                    }}
+                                    placeholder="170"
+                                    className="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm"
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    cm
+                                </span>
+                            </div>
                         </div>
 
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                Suhu Tubuh (°C)
+                                Suhu Tubuh
                             </label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                value={data.suhu_tubuh || ''}
-                                onChange={(e) =>
-                                    setData('suhu_tubuh', e.target.value)
-                                }
-                                placeholder="Contoh: 36.8"
-                                className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    value={data.suhu_tubuh || ''}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value);
+                                        if (!isNaN(val) && val >= 0) {
+                                            setData(
+                                                'suhu_tubuh',
+                                                e.target.value,
+                                            );
+                                        } else if (e.target.value === '') {
+                                            setData('suhu_tubuh', '');
+                                        }
+                                    }}
+                                    placeholder="36.8"
+                                    className="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm"
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    °C
+                                </span>
+                            </div>
                         </div>
 
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                Tekanan Darah
+                                Tekanan Darah{' '}
+                                <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                value={data.tekanan_darah || ''}
-                                onChange={(e) =>
-                                    setData('tekanan_darah', e.target.value)
-                                }
-                                placeholder="Contoh: 120/80"
-                                className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="text"
+                                    value={data.tekanan_darah || ''}
+                                    onChange={(e) => {
+                                        const raw = e.target.value.replace(
+                                            /[^0-9/]/g,
+                                            '',
+                                        );
+                                        setData('tekanan_darah', raw);
+                                    }}
+                                    placeholder="120/80"
+                                    className="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm"
+                                    required
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    mmHg
+                                </span>
+                            </div>
                         </div>
 
                         <div className="md:col-span-2">

@@ -47,7 +47,7 @@ class ResepsionisPembayaranController extends Controller
      */
     public function create($id)
     {
-        // 
+        //
     }
 
     /**
@@ -55,7 +55,7 @@ class ResepsionisPembayaranController extends Controller
      */
     public function store(Request $request, $id)
     {
-        // 
+        //
     }
 
     /**
@@ -73,7 +73,7 @@ class ResepsionisPembayaranController extends Controller
     {
         $resep = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien,nik,riwayat_penyakit',
-            'dokter:id,name',
+            'dokter.user:id,name',
             'resepDetail:id,resep_id,obat_id,jumlah,harga_satuan',
             'resepDetail.obat:id,nama_obat,satuan,harga',
             'catatanLayanan:id,diagnosa',

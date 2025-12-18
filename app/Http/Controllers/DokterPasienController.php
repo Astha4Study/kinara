@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dokter;
-use App\Models\Klinik;
 use App\Models\Pasien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +17,14 @@ class DokterPasienController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->hasRole('dokter')) {
+        // Role check sebaiknya di middleware, tapi ini masih aman
+        if (! $user->hasRole('dokter')) {
             abort(403, 'Hanya dokter yang dapat mengakses halaman ini.');
+        }
+
+        // Pastikan user memang punya data dokter
+        if (! $user->dokter) {
+            abort(404, 'Data dokter tidak ditemukan.');
         }
 
         $pasien = Pasien::with('klinik')
@@ -29,7 +34,6 @@ class DokterPasienController extends Controller
 
         return Inertia::render('Dokter/Pasien/Index', [
             'pasien' => $pasien,
-            'isDokter' => true,
         ]);
     }
 
@@ -56,10 +60,17 @@ class DokterPasienController extends Controller
     {
         $user = Auth::user();
 
-        $dokter = Dokter::where('user_id', $user->id)->first();
+        if (! $user->hasRole('dokter')) {
+            abort(403);
+        }
 
-        if (!$dokter) {
-            abort(403, 'Data dokter tidak ditemukan.');
+        if (! $user->dokter) {
+            abort(404, 'Data dokter tidak ditemukan.');
+        }
+
+        // Optional: pastikan pasien satu klinik
+        if ($pasien->klinik_id !== $user->klinik_id) {
+            abort(403, 'Pasien bukan milik klinik Anda.');
         }
 
         $pasien->load('klinik');
@@ -67,7 +78,6 @@ class DokterPasienController extends Controller
         return Inertia::render('Dokter/Pasien/Show', [
             'pasien' => $pasien,
         ]);
-
     }
 
     /**
@@ -75,7 +85,7 @@ class DokterPasienController extends Controller
      */
     public function edit(Pasien $pasien)
     {
-        // 
+        //
     }
 
     /**
@@ -83,7 +93,7 @@ class DokterPasienController extends Controller
      */
     public function update(Request $request, Pasien $pasien)
     {
-        // 
+        //
     }
 
     /**

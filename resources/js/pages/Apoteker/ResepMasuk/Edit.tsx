@@ -1,4 +1,6 @@
 import DataPasienResep from '@/components/data-pasien-resep';
+import DataPemeriksaanFisik from '@/components/data-pemeriksaan-fisik';
+
 import FormChecklistResepMasukApoteker from '@/components/form-checklist-resep-masuk-apoteker';
 import {
     AlertDialog,
@@ -26,12 +28,15 @@ type Resep = {
     pasien: {
         nama_lengkap: string;
         nomor_pasien: string;
-        nik: string;
         riwayat_penyakit: string;
     };
 
-    dokter: {
-        nama: string;
+    pemeriksaan_fisik: {
+        berat_badan: number;
+        tinggi_badan: number;
+        suhu_tubuh: number;
+        tekanan_darah: string;
+        kondisi_khusus: string;
     };
 
     detail: {
@@ -76,8 +81,11 @@ export default function ResepMasukEditApoteker({ resep }: Props) {
                 <div>
                     <DataPasienResep
                         pasien={resep.pasien}
-                        dokter={resep.dokter}
                         diagnosa={resep.diagnosa}
+                    />
+
+                    <DataPemeriksaanFisik
+                        pemeriksaanFisik={resep.pemeriksaan_fisik}
                     />
 
                     <FormChecklistResepMasukApoteker
@@ -106,7 +114,7 @@ export default function ResepMasukEditApoteker({ resep }: Props) {
                         <AlertDialogAction
                             onClick={handleConfirmSubmit}
                             disabled={processing}
-                            className='bg-emerald-600 hover:bg-emerald-700'
+                            className="bg-emerald-600 hover:bg-emerald-700"
                         >
                             Ya, Sudah Dicek
                         </AlertDialogAction>

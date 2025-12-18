@@ -34,7 +34,7 @@ export default function PengaturanKlinikCard() {
 
     if (!klinik)
         return (
-            <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <div>
                 <div className="flex flex-col items-center justify-center">
                     <h3 className="mb-1 text-lg font-semibold text-gray-900">
                         Belum Ada Klinik
@@ -55,7 +55,7 @@ export default function PengaturanKlinikCard() {
         );
 
     return (
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div>
             <FormPengaturanKlinikAdmin
                 data={data}
                 setData={setData}

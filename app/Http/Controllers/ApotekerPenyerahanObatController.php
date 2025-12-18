@@ -16,7 +16,7 @@ class ApotekerPenyerahanObatController extends Controller
     {
         $reseps = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien',
-            'dokter:id,name',
+            'dokter.user:id,name',
             'pembayaran:id,resep_id,status',
         ])
             ->whereHas('pembayaran', fn($q) => $q->where('status', 'lunas'))
@@ -41,7 +41,7 @@ class ApotekerPenyerahanObatController extends Controller
      */
     public function create($id)
     {
-        // 
+        //
     }
 
     /**
@@ -81,7 +81,7 @@ class ApotekerPenyerahanObatController extends Controller
     {
         $resep = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien,nik,riwayat_penyakit',
-            'dokter:id,name',
+            'dokter.user:id,name',
             'resepDetail.obat:id,nama_obat,satuan,harga',
             'catatanLayanan:id,diagnosa',
             'pembayaran:id,resep_id,status',
