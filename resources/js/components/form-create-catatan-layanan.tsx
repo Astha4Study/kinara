@@ -104,7 +104,6 @@ const FormCreateCatatanLayanan: React.FC<Props> = ({
                             />
                         </div>
 
-                        {/* Baris-baris lain TAMPIL JIKA showMore = true */}
                         {showMore && (
                             <>
                                 {/* NIK */}

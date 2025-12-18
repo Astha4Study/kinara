@@ -9,6 +9,7 @@ use App\Http\Controllers\ApotekerKlinikController;
 use App\Http\Controllers\ApotekerObatController;
 use App\Http\Controllers\ApotekerPenyerahanObatController;
 use App\Http\Controllers\ApotekerResepController;
+use App\Http\Controllers\ApotekerResepDetailController;
 use App\Http\Controllers\ApotekerResepMasukController;
 use App\Http\Controllers\DokterAntrianController;
 use App\Http\Controllers\DokterCatatanLayananController;
@@ -28,10 +29,10 @@ use App\Http\Controllers\SuperAdminPasienController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', fn () => Inertia::render('welcome'))->name('home');
+Route::get('/', fn() => Inertia::render('welcome'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
+    Route::get('dashboard', fn() => Inertia::render('dashboard'))->name('dashboard');
 
     Route::middleware(['auth', 'role:super_admin'])
         ->prefix('super-admin')
@@ -141,8 +142,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('penyerahan-obat.edit');
             Route::patch('penyerahan-obat/{resep}', [ApotekerPenyerahanObatController::class, 'update'])
                 ->name('penyerahan-obat.update');
+            Route::post('resep-masuk/{resep}/detail', [ApotekerResepDetailController::class, 'store'])
+                ->name('resep-detail.store');
         });
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

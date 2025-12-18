@@ -100,17 +100,11 @@ export function AppSidebar() {
             footer: ['Kelola Admin'],
         },
         admin: {
-            main: ['Dashboard', 'Klinik', 'Catatan Layanan Pasien'],
+            main: ['Dashboard', 'Klinik'],
             footer: ['Tambah User', 'Pengaturan'],
         },
         resepsionis: {
-            main: [
-                'Dashboard',
-                'Pasien',
-                'Antrian',
-                'Klinik',
-                'Pembayaran',
-            ],
+            main: ['Dashboard', 'Pasien', 'Antrian', 'Klinik', 'Pembayaran'],
             footer: [],
         },
         dokter: {

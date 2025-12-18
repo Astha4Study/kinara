@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Obat;
 use App\Models\Pembayaran;
 use App\Models\Resep;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class ApotekerResepMasukController extends Controller
             ->whereIn('status', ['pending', 'sedang_dibuat'])
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'id' => $item->id,
                 'pasien_nama' => $item->pasien->nama_lengkap,
                 'nomor_pasien' => $item->pasien->nomor_pasien,
@@ -76,6 +77,11 @@ class ApotekerResepMasukController extends Controller
             'resepDetail.obat:id,nama_obat,satuan,harga',
         ])->findOrFail($id);
 
+        $obatMaster = Obat::where('klinik_id', $resep->klinik_id)
+            ->select('id', 'nama_obat', 'jenis_obat', 'satuan', 'harga', 'penggunaan_obat')
+            ->orderBy('nama_obat')
+            ->get();
+
         return Inertia::render('Apoteker/ResepMasuk/Edit', [
             'resep' => [
                 'id' => $resep->id,
@@ -98,15 +104,18 @@ class ApotekerResepMasukController extends Controller
                     'kondisi_khusus' => $resep->pasien->pemeriksaanFisik->kondisi_khusus ?? null,
                 ],
 
-                'detail' => $resep->resepDetail->map(fn ($d) => [
-                    'id' => $d->id,
+                'detail' => $resep->resepDetail->map(fn($d) => [
+                    'obat_id' => $d->obat->id,
                     'nama_obat' => $d->obat->nama_obat,
                     'jumlah' => $d->jumlah,
                     'satuan' => $d->obat->satuan,
                     'harga' => $d->obat->harga,
+                    'penggunaan_obat' => $d->obat->penggunaan_obat,
                     'subtotal' => $d->jumlah * $d->obat->harga,
                 ]),
             ],
+
+            'obatMaster' => $obatMaster,
         ]);
     }
 

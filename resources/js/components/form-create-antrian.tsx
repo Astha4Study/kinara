@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import clsx from 'clsx';
-import React from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface Pasien {
     id: number;
@@ -58,6 +59,8 @@ const FormCreateAntrian: React.FC<FormCreateAntrianProps> = ({
     handleSubmit,
     processing,
 }) => {
+    const [showMore, setShowMore] = useState(false);
+
     return (
         <form onSubmit={handleSubmit} autoComplete="off" className="space-y-6">
             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
@@ -104,40 +107,64 @@ const FormCreateAntrian: React.FC<FormCreateAntrianProps> = ({
                             />
                         </div>
 
-                        <div>
-                            <label className="mb-2 block text-sm font-medium text-gray-700">
-                                Jenis Kelamin
-                            </label>
-                            <input
-                                type="text"
-                                value={
-                                    pasien.jenis_kelamin === 'L'
-                                        ? 'Laki-laki'
-                                        : 'Perempuan'
-                                }
-                                disabled
-                                className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-600"
-                            />
-                        </div>
+                        {showMore && (
+                            <>
+                                <div>
+                                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                                        Jenis Kelamin
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={
+                                            pasien.jenis_kelamin === 'L'
+                                                ? 'Laki-laki'
+                                                : 'Perempuan'
+                                        }
+                                        disabled
+                                        className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-600"
+                                    />
+                                </div>
 
-                        <Highlight
-                            label="Umur Pasien"
-                            value={`${pasien.umur} Tahun`}
-                        />
+                                <Highlight
+                                    label="Umur Pasien"
+                                    value={`${pasien.umur} Tahun`}
+                                />
 
-                        {/* Tanggal Kunjungan */}
-                        <div className="md:col-span-2">
-                            <label className="mb-2 block text-sm font-medium text-gray-700">
-                                Tanggal Kunjungan
-                            </label>
-                            <input
-                                type="date"
-                                name="tanggal_kunjungan"
-                                value={data.tanggal_kunjungan}
-                                disabled
-                                className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm"
-                            />
-                        </div>
+                                {/* Tanggal Kunjungan */}
+                                <div className="md:col-span-2">
+                                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                                        Tanggal Kunjungan
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="tanggal_kunjungan"
+                                        value={data.tanggal_kunjungan}
+                                        disabled
+                                        className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm"
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    {/* Tombol Show More / Less */}
+                    <div className="mt-4 text-center">
+                        <button
+                            type="button"
+                            onClick={() => setShowMore((v) => !v)}
+                            className="inline-flex items-center text-sm text-emerald-600"
+                        >
+                            {showMore ? (
+                                <>
+                                    Tampilkan Lebih Sedikit{' '}
+                                    <ChevronUp className="h-4 w-4" />
+                                </>
+                            ) : (
+                                <>
+                                    Tampilkan Lebih Banyak{' '}
+                                    <ChevronDown className="h-4 w-4" />
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>

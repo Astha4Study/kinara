@@ -17,7 +17,7 @@ class ResepsionisPembayaranController extends Controller
     {
         $pembayarans = Pembayaran::with([
             'resep.pasien:id,nama_lengkap,nomor_pasien',
-            'resep.dokter:id,name',
+            'resep.dokter.user:id,name',
         ])
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
@@ -30,7 +30,7 @@ class ResepsionisPembayaranController extends Controller
                     'nomor_resep' => 'RSP-' . str_pad($resep->id, 6, '0', STR_PAD_LEFT),
                     'nomor_pasien' => $resep->pasien->nomor_pasien ?? '-',
                     'pasien_nama' => $resep->pasien->nama_lengkap ?? '-',
-                    'dokter_nama' => $resep->dokter->name ?? '-',
+                    'dokter_nama' => $resep->dokter->user->name ?? '-',
                     'total_harga' => $resep->total_harga,
                     'status_pembayaran' => $pembayaran->status,
                     'tanggal' => $pembayaran->created_at->format('d F Y'),

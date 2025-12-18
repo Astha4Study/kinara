@@ -1,7 +1,7 @@
 import DataPasienResep from '@/components/data-pasien-resep';
 import DataPemeriksaanFisik from '@/components/data-pemeriksaan-fisik';
+import FormCreateResep from '@/components/form-create-resep';
 
-import FormChecklistResepMasukApoteker from '@/components/form-checklist-resep-masuk-apoteker';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,6 +17,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { route } from 'ziggy-js';
 
 type Resep = {
@@ -26,6 +27,7 @@ type Resep = {
     diagnosa: string;
 
     pasien: {
+        id: number;
         nama_lengkap: string;
         nomor_pasien: string;
         riwayat_penyakit: string;
@@ -51,6 +53,14 @@ type Resep = {
 
 type Props = {
     resep: Resep;
+    obatMaster: {
+        id: number;
+        nama_obat: string;
+        jenis_obat: string;
+        satuan: string;
+        harga: number;
+        penggunaan_obat: string;
+    }[];
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -58,43 +68,57 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Siapkan Obat Pasien', href: '' },
 ];
 
-export default function ResepMasukEditApoteker({ resep }: Props) {
-    const { put, processing } = useForm();
+export default function ResepMasukEditApoteker({ resep, obatMaster }: Props) {
+    const form = useForm({
+        detail: [] as {
+            nama_obat: string;
+            jumlah: number;
+            satuan: string;
+            harga: number;
+            subtotal: number;
+        }[],
+    });
+
     const [openConfirm, setOpenConfirm] = useState(false);
+    const [detailObat, setDetailObat] = useState(form.data.detail);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setOpenConfirm(true);
-    };
+    const handleSubmit = () => {
+        form.setData('detail', detailObat);
 
-    const handleConfirmSubmit = () => {
-        put(route('apoteker.resep-masuk.update', resep.id), {
+        form.post(route('apoteker.resep-detail.store', resep.id), {
             preserveScroll: true,
-            onSuccess: () => setOpenConfirm(false),
+            onSuccess: () => {
+                setOpenConfirm(false);
+                toast.success('Resep berhasil dibuat');
+            },
+            onError: () => {
+                toast.error('Terjadi kesalahan saat membuat resep');
+            },
         });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Siapkan Obat Pasien" />
-            <div className="p-6">
-                <div>
-                    <DataPasienResep
-                        pasien={resep.pasien}
-                        diagnosa={resep.diagnosa}
-                    />
+            <div className="space-y-6 p-6">
+                <DataPasienResep
+                    pasien={resep.pasien}
+                    diagnosa={resep.diagnosa}
+                />
+                <DataPemeriksaanFisik
+                    pemeriksaanFisik={resep.pemeriksaan_fisik}
+                />
 
-                    <DataPemeriksaanFisik
-                        pemeriksaanFisik={resep.pemeriksaan_fisik}
-                    />
-
-                    <FormChecklistResepMasukApoteker
-                        resep={resep}
-                        handleSubmit={handleSubmit}
-                        processing={processing}
-                    />
-                </div>
+                <FormCreateResep
+                    obat_list={obatMaster}
+                    processing={form.processing}
+                    errors={form.errors}
+                    pasien={resep.pasien}
+                    onChange={(list) => form.setData('detail', list)}
+                    onConfirm={() => setOpenConfirm(true)}
+                />
             </div>
+
             <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -106,14 +130,13 @@ export default function ResepMasukEditApoteker({ resep }: Props) {
                             dan sesuai dengan resep dokter?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-
                     <AlertDialogFooter>
-                        <AlertDialogCancel disabled={processing}>
+                        <AlertDialogCancel disabled={form.processing}>
                             Batal
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleConfirmSubmit}
-                            disabled={processing}
+                            onClick={handleSubmit}
+                            disabled={form.processing}
                             className="bg-emerald-600 hover:bg-emerald-700"
                         >
                             Ya, Sudah Dicek
