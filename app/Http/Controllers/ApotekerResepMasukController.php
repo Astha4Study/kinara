@@ -18,6 +18,10 @@ class ApotekerResepMasukController extends Controller
     {
         $user = Auth::user();
 
+        if (!$user->hasRole('apoteker')) {
+            abort(403, 'Hanya apoteker yang boleh mengakses halaman ini.');
+        }
+
         $resep = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien',
             'dokter.user:id,name',
@@ -26,7 +30,7 @@ class ApotekerResepMasukController extends Controller
             ->whereIn('status', ['pending', 'sedang_dibuat'])
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'id' => $item->id,
                 'pasien_nama' => $item->pasien->nama_lengkap,
                 'nomor_pasien' => $item->pasien->nomor_pasien,
@@ -106,7 +110,7 @@ class ApotekerResepMasukController extends Controller
                     'kondisi_khusus' => $resep->pasien->pemeriksaanFisik->kondisi_khusus ?? null,
                 ],
 
-                'detail' => $resep->resepDetail->map(fn ($d) => [
+                'detail' => $resep->resepDetail->map(fn($d) => [
                     'obat_id' => $d->obat->id,
                     'nama_obat' => $d->obat->nama_obat,
                     'jumlah' => $d->jumlah,

@@ -14,13 +14,20 @@ class ApotekerPenyerahanObatController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
+
+        if (!$user->hasRole('apoteker')) {
+            abort(403, 'Hanya apoteker yang boleh mengakses halaman ini.');
+        }
+
         $reseps = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien',
             'dokter.user:id,name',
             'pembayaran:id,resep_id,status',
         ])
-            ->whereHas('pembayaran', fn($q) => $q->where('status', 'lunas'))
-            ->orderBy('created_at', 'desc')
+            ->where('klinik_id', $user->klinik_id)
+            ->whereHas('pembayaran', fn($q) => $q->whereIn('status', ['lunas', 'pending']))
+            ->orderBy('created_at', 'asc')
             ->get()
             ->map(fn($r) => [
                 'id' => $r->id,
@@ -77,21 +84,38 @@ class ApotekerPenyerahanObatController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($resep)
+    public function edit(string $id)
     {
+        $user = auth()->user();
+
+        // pastikan hanya apoteker
+        if (!$user->hasRole('apoteker')) {
+            abort(403, 'Hanya apoteker yang boleh mengakses halaman ini.');
+        }
+
+        // ambil resep lunas paling awal untuk klinik ini
+        $allowedResep = Resep::with('pembayaran')
+            ->where('klinik_id', $user->klinik_id)
+            ->whereHas('pembayaran', fn($q) => $q->where('status', 'lunas'))
+            ->orderBy('created_at', 'asc')
+            ->first();
+
+        if (!$allowedResep) {
+            abort(403, 'Tidak ada resep yang dapat diproses.');
+        }
+
+        // cek apakah resep yang diklik memang resep teratas
+        if ($allowedResep->id != $id) {
+            abort(403, 'Resep ini belum bisa diproses.');
+        }
+
         $resep = Resep::with([
             'pasien:id,nama_lengkap,nomor_pasien,nik,riwayat_penyakit',
             'dokter.user:id,name',
             'resepDetail.obat:id,nama_obat,satuan,harga',
             'catatanLayanan:id,diagnosa',
             'pembayaran:id,resep_id,status',
-        ])->findOrFail($resep);
-
-        abort_if(
-            $resep->pembayaran?->status !== 'lunas',
-            403,
-            'Pembayaran belum lunas'
-        );
+        ])->findOrFail($id);
 
         return Inertia::render('Apoteker/PenyerahanObat/Edit', [
             'resep' => [
@@ -105,7 +129,7 @@ class ApotekerPenyerahanObatController extends Controller
                     'riwayat_penyakit' => $resep->pasien->riwayat_penyakit,
                 ],
                 'dokter' => [
-                    'nama' => $resep->dokter->name ?? '-',
+                    'nama' => $resep->dokter->user->name ?? '-',
                 ],
                 'detail' => $resep->resepDetail->map(fn($d) => [
                     'id' => $d->id,

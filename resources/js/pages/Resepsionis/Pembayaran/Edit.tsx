@@ -86,7 +86,6 @@ export default function PembayaranCreateResepsionis({ resep }: Props) {
                     {/* Data Pasien & Dokter */}
                     <DataPasienResep
                         pasien={resep.pasien}
-                        dokter={resep.dokter}
                         diagnosa={resep.diagnosa}
                     />
 

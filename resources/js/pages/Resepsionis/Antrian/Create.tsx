@@ -1,3 +1,4 @@
+import DataRingkasanPasienAntrian from '@/components/data-ringkasan-pasien-antrian';
 import FormCreateAntrian from '@/components/form-create-antrian';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
@@ -64,14 +65,18 @@ export default function AntrianCreateResepsionis({ pasien }: Props) {
                         Lengkapi data untuk membuat antrian
                     </p>
                 </div>
-                <div>
-                    <FormCreateAntrian
+
+                <div className="space-y-6">
+                    <DataRingkasanPasienAntrian
                         pasien={pasien}
+                        tanggalKunjungan={data.tanggal_kunjungan}
+                    />
+
+                    <FormCreateAntrian
                         data={data}
                         setData={setData}
                         handleSubmit={handleSubmit}
                         processing={processing}
-                        errors={errors}
                     />
                 </div>
             </div>

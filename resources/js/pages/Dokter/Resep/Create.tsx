@@ -1,3 +1,4 @@
+import DataRingkasanPasienResep from '@/components/data-ringkasan-pasien-resep';
 import FormResepTeks from '@/components/form-resep-teks';
 import AppLayout from '@/layouts/app-layout';
 import { useCatatanLayananStore } from '@/stores/catatan-layanan.store';
@@ -7,10 +8,27 @@ import { toast } from 'sonner';
 import { route } from 'ziggy-js';
 
 type Props = {
-    pasien: { id: number; nama_lengkap: string; nomor_pasien?: string };
+    pasien: {
+        id: number;
+        nama_lengkap: string;
+        nomor_pasien?: string;
+        tanggal_lahir?: string | null;
+        golongan_darah?: string | null;
+        riwayat_penyakit?: string | null;
+        alergi?: string | null;
+    };
+    pemeriksaan_fisik: {
+        berat_badan: number | null;
+        tekanan_darah: string | null;
+        suhu_tubuh: number | null;
+        kondisi_khusus: string | null;
+    };
 };
 
-export default function ResepCreateDokter({ pasien }: Props) {
+export default function ResepCreateDokter({
+    pasien,
+    pemeriksaan_fisik,
+}: Props) {
     const { data: catatan } = useCatatanLayananStore();
 
     const handleSubmit = (resepTeks: string) => {
@@ -59,6 +77,11 @@ export default function ResepCreateDokter({ pasien }: Props) {
                 </div>
 
                 <div className="rounded-lg border bg-white">
+                    <DataRingkasanPasienResep
+                        pasien={pasien}
+                        pemeriksaanFisik={pemeriksaan_fisik}
+                    />
+
                     <FormResepTeks
                         onConfirm={handleSubmit}
                         pasien={pasien}

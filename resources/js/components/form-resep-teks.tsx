@@ -74,7 +74,7 @@ Habiskan`}
                 </div>
 
                 {/* Footer Aksi */}
-                <div className="border-gray-199 flex justify-end gap-3 border-t bg-gray-50 px-6 py-4">
+                <div className="border-gray-199 flex justify-end gap-3 rounded-b-lg border-t bg-gray-50 px-6 py-4">
                     <Link
                         href={`/dokter/antrian/${pasien.id}/tangani`}
                         className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"

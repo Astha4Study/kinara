@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pembayaran;
 use App\Models\Resep;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -20,6 +21,7 @@ class ResepsionisPembayaranController extends Controller
             'resep.dokter.user:id,name',
         ])
             ->where('status', 'pending')
+            ->where('klinik_id', auth()->user()->klinik_id)
             ->orderBy('created_at', 'asc')
             ->get()
             ->map(function ($pembayaran) {
@@ -77,6 +79,8 @@ class ResepsionisPembayaranController extends Controller
     {
         $allowedResep = Pembayaran::with('resep')
             ->where('status', 'pending')
+            ->where('klinik_id', auth()->user()->klinik_id)
+            ->where('resep_id', $id)
             ->orderBy('created_at', 'asc')
             ->first();
 

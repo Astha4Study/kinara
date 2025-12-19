@@ -1,4 +1,6 @@
-import FormCreateCatatanLayanan from '@/components/form-create-catatan-layanan';
+import DataPasienTangani from '@/components/data-pasien-tangani';
+import DataPemeriksaanFisik from '@/components/data-pemeriksaan-fisik';
+import FormCreateCatatanLayananDokter from '@/components/form-create-catatan-layanan-dokter';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -145,11 +147,15 @@ export default function TindakanCreateDokter({
                     </p>
                 </div>
 
-                <div>
-                    <FormCreateCatatanLayanan
-                        pasien={pasien}
-                        punyaServer={punya_server}
+                <div className="space-y-6">
+                    <DataPasienTangani pasien={pasien} />
+
+                    <DataPemeriksaanFisik
                         pemeriksaanFisik={pemeriksaan_fisik}
+                    />
+
+                    <FormCreateCatatanLayananDokter
+                        punyaServer={punya_server}
                         data={data}
                         setData={setData}
                         handleSubmit={handleSubmit}
