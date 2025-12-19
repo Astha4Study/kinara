@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Obat;
 use App\Models\Pembayaran;
 use App\Models\Resep;
-use App\Models\ResepDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -63,9 +62,14 @@ class ApotekerResepDetailController extends Controller
             }
 
             $resep->update(['total_harga' => $total, 'status' => 'selesai']);
+
             Pembayaran::updateOrCreate(
                 ['resep_id' => $resep->id],
-                ['total_bayar' => $total, 'status' => 'pending']
+                [
+                    'klinik_id' => $resep->klinik_id,
+                    'total_bayar' => $total,
+                    'status' => 'pending',
+                ]
             );
         });
 

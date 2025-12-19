@@ -10,10 +10,18 @@ type Props = {
     pemeriksaanFisik: PemeriksaanFisik;
 };
 
-export default function DataPemeriksaanFisik({ pemeriksaanFisik }: Props) {
+const DataPemeriksaanFisik = ({ pemeriksaanFisik }: Props) => {
     return (
-        <div className="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm">
-            <div className="p-6">
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="space-y-6 p-6">
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-800">
+                        Pemeriksaan Fisik Pasien
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Hasil pemeriksaan fisik yang dilakukan oleh tenaga medis
+                    </p>
+                </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {/* Berat Badan */}
                     <div>
@@ -108,4 +116,6 @@ export default function DataPemeriksaanFisik({ pemeriksaanFisik }: Props) {
             </div>
         </div>
     );
-}
+};
+
+export default DataPemeriksaanFisik;

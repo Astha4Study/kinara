@@ -17,23 +17,25 @@ class DokterPasienController extends Controller
     {
         $user = Auth::user();
 
-        // Role check sebaiknya di middleware, tapi ini masih aman
         if (! $user->hasRole('dokter')) {
             abort(403, 'Hanya dokter yang dapat mengakses halaman ini.');
         }
 
-        // Pastikan user memang punya data dokter
-        if (! $user->dokter) {
+        // Ambil data dokter SECARA EKSPLISIT
+        $dokter = $user->dokter()->with('klinik')->first();
+
+        if (! $dokter) {
             abort(404, 'Data dokter tidak ditemukan.');
         }
 
         $pasien = Pasien::with('klinik')
-            ->where('klinik_id', $user->klinik_id)
+            ->where('klinik_id', $dokter->klinik_id)
             ->latest()
             ->get();
 
         return Inertia::render('Dokter/Pasien/Index', [
             'pasien' => $pasien,
+            'dokter' => $dokter,
         ]);
     }
 
@@ -64,12 +66,14 @@ class DokterPasienController extends Controller
             abort(403);
         }
 
-        if (! $user->dokter) {
+        $dokter = $user->dokter;
+
+        if (! $dokter) {
             abort(404, 'Data dokter tidak ditemukan.');
         }
 
-        // Optional: pastikan pasien satu klinik
-        if ($pasien->klinik_id !== $user->klinik_id) {
+        // VALIDASI KLINIK YANG BENAR
+        if ($pasien->klinik_id !== $dokter->klinik_id) {
             abort(403, 'Pasien bukan milik klinik Anda.');
         }
 

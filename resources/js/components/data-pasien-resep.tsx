@@ -10,9 +10,9 @@ type Props = {
     diagnosa: string;
 };
 
-export default function DataPasienResep({ pasien, diagnosa }: Props) {
+const DataPasienResep = ({ pasien, diagnosa }: Props) => {
     return (
-        <div className="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
             <div className="space-y-6 p-6">
                 <div>
                     <h2 className="text-lg font-semibold text-gray-800">
@@ -45,7 +45,7 @@ export default function DataPasienResep({ pasien, diagnosa }: Props) {
             </div>
         </div>
     );
-}
+};
 
 function Info({ label, value }: { label: string; value?: string }) {
     return (
@@ -80,3 +80,5 @@ function Highlight({
         </div>
     );
 }
+
+export default DataPasienResep;

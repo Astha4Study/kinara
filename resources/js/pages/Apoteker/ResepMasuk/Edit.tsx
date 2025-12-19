@@ -1,5 +1,6 @@
 import DataPasienResep from '@/components/data-pasien-resep';
 import DataPemeriksaanFisik from '@/components/data-pemeriksaan-fisik';
+import DataResepTeks from '@/components/data-resep-teks';
 import FormCreateResep from '@/components/form-create-resep';
 
 import {
@@ -22,9 +23,8 @@ import { route } from 'ziggy-js';
 
 type Resep = {
     id: number;
-    total_harga: number;
-    status: string;
     diagnosa: string;
+    resep_teks: string;
 
     pasien: {
         id: number;
@@ -80,11 +80,8 @@ export default function ResepMasukEditApoteker({ resep, obatMaster }: Props) {
     });
 
     const [openConfirm, setOpenConfirm] = useState(false);
-    const [detailObat, setDetailObat] = useState(form.data.detail);
 
     const handleSubmit = () => {
-        form.setData('detail', detailObat);
-
         form.post(route('apoteker.resep-detail.store', resep.id), {
             preserveScroll: true,
             onSuccess: () => {
@@ -101,13 +98,17 @@ export default function ResepMasukEditApoteker({ resep, obatMaster }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Siapkan Obat Pasien" />
             <div className="space-y-6 p-6">
-                <DataPasienResep
-                    pasien={resep.pasien}
-                    diagnosa={resep.diagnosa}
-                />
-                <DataPemeriksaanFisik
-                    pemeriksaanFisik={resep.pemeriksaan_fisik}
-                />
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <DataPasienResep
+                        pasien={resep.pasien}
+                        diagnosa={resep.diagnosa}
+                    />
+                    <DataPemeriksaanFisik
+                        pemeriksaanFisik={resep.pemeriksaan_fisik}
+                    />
+                </div>
+
+                <DataResepTeks resep_teks={resep.resep_teks} />
 
                 <FormCreateResep
                     obat_list={obatMaster}
