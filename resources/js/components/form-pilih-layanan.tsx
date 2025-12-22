@@ -8,7 +8,6 @@ type Layanan = {
 type LayananItem = {
     layanan_id: number;
     nama_layanan: string;
-    qty: number;
 };
 
 interface Props {
@@ -17,18 +16,23 @@ interface Props {
     errors?: Record<string, string>;
 }
 
-const FormPilihLayanan = ({ layanan_list = [], onChange, errors = {} }: Props) => {
+const FormPilihLayanan = ({
+    layanan_list = [],
+    onChange,
+    errors = {},
+}: Props) => {
     const [items, setItems] = useState<LayananItem[]>([]);
 
+    const barisPilihan = (index: number) =>
+        layanan_list.filter(
+            (l) =>
+                l.id === 0 ||
+                l.id === items[index]?.layanan_id ||
+                !items.some((it) => it.layanan_id === l.id),
+        );
+
     const tambahBaris = () => {
-        setItems((prev) => [
-            ...prev,
-            {
-                layanan_id: 0,
-                nama_layanan: '',
-                qty: 1,
-            },
-        ]);
+        setItems((prev) => [...prev, { layanan_id: 0, nama_layanan: '' }]);
     };
 
     const hapusBaris = (index: number) => {
@@ -38,7 +42,7 @@ const FormPilihLayanan = ({ layanan_list = [], onChange, errors = {} }: Props) =
     const updateItem = (
         index: number,
         key: keyof LayananItem,
-        value: number | string,
+        value: string | number,
     ) => {
         setItems((prev) => {
             const copy = [...prev];
@@ -81,50 +85,30 @@ const FormPilihLayanan = ({ layanan_list = [], onChange, errors = {} }: Props) =
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                                        Layanan
-                                    </label>
-                                    <select
-                                        value={item.layanan_id}
-                                        onChange={(e) =>
-                                            pilihLayanan(
-                                                idx,
-                                                Number(e.target.value),
-                                            )
-                                        }
-                                        className="w-full rounded-lg border px-3 py-2 text-sm"
-                                    >
-                                        <option value={0}>
-                                            -- Pilih Layanan --
+                            {/* satu-satunya field: pilih layanan */}
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">
+                                    Layanan
+                                </label>
+                                <select
+                                    value={item.layanan_id}
+                                    onChange={(e) =>
+                                        pilihLayanan(
+                                            idx,
+                                            Number(e.target.value),
+                                        )
+                                    }
+                                    className="w-full rounded-lg border px-3 py-2 text-sm"
+                                >
+                                    <option value={0}>
+                                        -- Pilih Layanan --
+                                    </option>
+                                    {barisPilihan(idx).map((l) => (
+                                        <option key={l.id} value={l.id}>
+                                            {l.nama_layanan}
                                         </option>
-                                        {(layanan_list ?? []).map((l) => (
-                                            <option key={l.id} value={l.id}>
-                                                {l.nama_layanan}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                                        Jumlah
-                                    </label>
-                                    <input
-                                        type="number"
-                                        min={1}
-                                        value={item.qty}
-                                        onChange={(e) =>
-                                            updateItem(
-                                                idx,
-                                                'qty',
-                                                Number(e.target.value),
-                                            )
-                                        }
-                                        className="w-full rounded-lg border px-3 py-2 text-sm"
-                                    />
-                                </div>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     ))}

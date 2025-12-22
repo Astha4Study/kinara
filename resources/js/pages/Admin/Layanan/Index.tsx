@@ -222,7 +222,7 @@ export default function LayananIndexAdmin() {
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={6}
+                                            colSpan={7}
                                             className="px-6 py-10 text-center text-sm text-gray-500"
                                         >
                                             Tidak ada layanan

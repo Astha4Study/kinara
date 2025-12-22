@@ -4,12 +4,11 @@ import { persist } from 'zustand/middleware';
 type LayananItem = {
     layanan_id: number;
     nama_layanan: string;
-    qty: number;
 };
 
 type CatatanForm = {
     antrian_id: number;
-    pemeriksaan_fisik_id: number;
+    pemeriksaan_fisik_id: number | null;
     pasien_id: number;
     klinik_id: number;
     keluhan_utama: string;
@@ -18,29 +17,25 @@ type CatatanForm = {
     tindakan: string;
     catatan_lain: string;
     layanan: LayananItem[];
+    butuh_resep: boolean;
 };
 
-type PersistedSlice = { data: CatatanForm };
-type TransientSlice = {
+type Store = {
+    data: CatatanForm;
     processing: boolean;
     errors: Record<string, string>;
-    setProcessing: (v: boolean) => void;
-    setErrors: (e: Record<string, string>) => void;
-};
-
-type Actions = {
     setData: <K extends keyof CatatanForm>(
         key: K,
         value: CatatanForm[K],
     ) => void;
+    setProcessing: (v: boolean) => void;
+    setErrors: (e: Record<string, string>) => void;
     reset: () => void;
 };
 
-type Store = PersistedSlice & TransientSlice & Actions;
-
 const initial: CatatanForm = {
     antrian_id: 0,
-    pemeriksaan_fisik_id: 0,
+    pemeriksaan_fisik_id: null,
     pasien_id: 0,
     klinik_id: 0,
     keluhan_utama: '',
@@ -49,6 +44,7 @@ const initial: CatatanForm = {
     tindakan: '',
     catatan_lain: '',
     layanan: [],
+    butuh_resep: true,
 };
 
 export const useCatatanLayananStore = create<Store>()(
@@ -58,11 +54,9 @@ export const useCatatanLayananStore = create<Store>()(
             processing: false,
             errors: {},
             setData: (key, value) =>
-                set((state) => ({
-                    data: { ...state.data, [key]: value },
-                })),
-            setProcessing: (val) => set({ processing: val }),
-            setErrors: (errs) => set({ errors: errs }),
+                set((s) => ({ data: { ...s.data, [key]: value } })),
+            setProcessing: (v) => set({ processing: v }),
+            setErrors: (e) => set({ errors: e }),
             reset: () =>
                 set({
                     data: { ...initial },
@@ -72,7 +66,7 @@ export const useCatatanLayananStore = create<Store>()(
         }),
         {
             name: 'catatan-layanan',
-            partialize: (state) => ({ data: state.data }),
+            partialize: (s) => ({ data: s.data }),
         },
     ),
 );

@@ -13,24 +13,26 @@ class Pembayaran extends Model
 
     protected $fillable = [
         'klinik_id',
+        'catatan_layanan_id',
         'resep_id',
         'resepsionis_id',
         'total_bayar',
         'status',
     ];
 
+
     public function resep()
     {
-        return $this->belongsTo(Resep::class, 'resep_id', 'id');
+        return $this->belongsTo(Resep::class);
+    }
+
+    public function catatanLayanan()
+    {
+        return $this->belongsTo(CatatanLayanan::class);
     }
 
     public function resepsionis()
     {
         return $this->belongsTo(User::class, 'resepsionis_id', 'id');
-    }
-
-    public function detail()
-    {
-        return $this->hasOne(PembayaranDetail::class);
     }
 }

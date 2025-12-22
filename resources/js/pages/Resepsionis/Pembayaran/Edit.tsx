@@ -51,7 +51,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Proses Pembayaran', href: '' },
 ];
 
-export default function PembayaranCreateResepsionis({ resep }: Props) {
+export default function PembayaranEditResepsionis({ resep }: Props) {
     const { data, setData, put, processing } = useForm({
         uang_dibayar: 0,
         metode_pembayaran: 'cash',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Antrian;
+use App\Models\Layanan;
 use App\Models\PemeriksaanFisik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,7 @@ class DokterTanganiController extends Controller
     {
         $dokter = Auth::user()->dokter;
 
-        if (! $dokter || $antrian->dokter_id !== $dokter->id) {
+        if (!$dokter || $antrian->dokter_id !== $dokter->id) {
             abort(404, 'Antrian tidak ditemukan untuk dokter ini');
         }
 
@@ -36,12 +37,17 @@ class DokterTanganiController extends Controller
             ->latest()
             ->first();
 
+        $layanan = Layanan::where('aktif', true)
+            ->where('klinik_id', $antrian->klinik_id)
+            ->orderBy('nama_layanan')
+            ->get(['id', 'nama_layanan']);
+
         return Inertia::render('Dokter/Tangani/Create', [
             'antrian' => $antrian->only('id', 'keluhan', 'tanggal_kunjungan'),
             'pasien' => $antrian->pasien->only('id', 'nama_lengkap', 'nomor_pasien', 'nik', 'tanggal_lahir', 'tempat_lahir', 'no_hp', 'golongan_darah', 'riwayat_penyakit', 'alergi'),
             'pemeriksaan_fisik' => $pemeriksaanFisik?->only('id', 'berat_badan', 'tinggi_badan', 'suhu_tubuh', 'tekanan_darah', 'kondisi_khusus'),
             'klinik' => $antrian->klinik->only('id', 'jenis_klinik'),
-
+            'layanan' => $layanan,
             'punya_server' => $antrian->klinik->punya_server,
         ]);
     }

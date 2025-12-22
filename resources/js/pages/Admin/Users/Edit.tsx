@@ -28,7 +28,7 @@ type Props = {
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Daftar User', href: '/admin/users' },
+    { title: 'Daftar User', href: '/admin/tambah-user' },
     { title: 'Edit User', href: '' },
 ];
 

@@ -19,26 +19,32 @@ class ResepsionisPembayaranController extends Controller
         $pembayarans = Pembayaran::with([
             'resep.pasien:id,nama_lengkap,nomor_pasien',
             'resep.dokter.user:id,name',
+            'catatanLayanan.pasien:id,nama_lengkap,nomor_pasien',
+            'catatanLayanan.dokter.user:id,name',
         ])
             ->where('status', 'pending')
             ->where('klinik_id', auth()->user()->klinik_id)
             ->orderBy('created_at', 'asc')
             ->get()
             ->map(function ($pembayaran) {
-                $resep = $pembayaran->resep;
+
+                // 🟢 Ambil sumber data
+                if ($pembayaran->resep_id) {
+                    $pasien = $pembayaran->resep->pasien;
+                    $dokter = $pembayaran->resep->dokter;
+                } else {
+                    $pasien = $pembayaran->catatanLayanan->pasien;
+                    $dokter = $pembayaran->catatanLayanan->dokter;
+                }
 
                 return [
                     'id' => $pembayaran->id,
-                    'nomor_resep' => 'RSP-' . str_pad($resep->id, 6, '0', STR_PAD_LEFT),
-                    'nomor_pasien' => $resep->pasien->nomor_pasien ?? '-',
-                    'pasien_nama' => $resep->pasien->nama_lengkap ?? '-',
-                    'dokter_nama' => $resep->dokter->user->name ?? '-',
-                    'total_harga' => $resep->total_harga,
+                    'nomor_pasien' => $pasien->nomor_pasien ?? '-',
+                    'pasien_nama' => $pasien->nama_lengkap ?? '-',
+                    'dokter_nama' => $dokter->user->name ?? '-',
+                    'total_harga' => $pembayaran->total_bayar,
                     'status_pembayaran' => $pembayaran->status,
-
                     'tanggal' => $pembayaran->created_at->toISOString(),
-
-                    'tanggal_label' => $pembayaran->created_at->format('d F Y'),
                 ];
             });
 
@@ -77,51 +83,64 @@ class ResepsionisPembayaranController extends Controller
      */
     public function edit(string $id)
     {
-        $allowedResep = Pembayaran::with('resep')
+        $pembayaran = Pembayaran::with([
+            'resep.pasien',
+            'resep.dokter.user',
+            'resep.resepDetail.obat',
+            'catatanLayanan.pasien',
+            'catatanLayanan.dokter.user',
+            'catatanLayanan.detail.layanan',
+        ])
             ->where('status', 'pending')
             ->where('klinik_id', auth()->user()->klinik_id)
-            ->where('resep_id', $id)
-            ->orderBy('created_at', 'asc')
-            ->first();
+            ->findOrFail($id);
 
-        if (!$allowedResep) {
-            abort(403, 'Tidak ada pembayaran yang dapat diproses.');
+        if ($pembayaran->resep_id) {
+            $resep = $pembayaran->resep;
+
+            return Inertia::render('Resepsionis/Pembayaran/Edit', [
+                'pembayaran' => [
+                    'id' => $pembayaran->id,
+                    'total_harga' => $pembayaran->total_bayar,
+                    'status' => $pembayaran->status,
+                    'pasien' => [
+                        'nama_lengkap' => $resep->pasien->nama_lengkap,
+                        'nomor_pasien' => $resep->pasien->nomor_pasien,
+                        'nik' => $resep->pasien->nik,
+                    ],
+                    'dokter' => [
+                        'nama' => $resep->dokter->user->name ?? '-',
+                    ],
+                    'detail' => $resep->resepDetail->map(fn($d) => [
+                        'nama' => $d->obat->nama_obat,
+                        'jumlah' => $d->jumlah,
+                        'harga' => $d->harga_satuan,
+                        'subtotal' => $d->jumlah * $d->harga_satuan,
+                    ]),
+                ],
+            ]);
         }
 
-        if ($allowedResep->resep_id != $id) {
-            abort(403, 'Resep ini belum bisa diproses.');
-        }
-
-        $resep = Resep::with([
-            'pasien:id,nama_lengkap,nomor_pasien,nik,riwayat_penyakit',
-            'dokter.user:id,name',
-            'resepDetail:id,resep_id,obat_id,jumlah,harga_satuan',
-            'resepDetail.obat:id,nama_obat,satuan,harga',
-            'catatanLayanan:id,diagnosa',
-        ])->findOrFail($id);
+        $catatan = $pembayaran->catatanLayanan;
 
         return Inertia::render('Resepsionis/Pembayaran/Edit', [
-            'resep' => [
-                'id' => $resep->id,
-                'total_harga' => $resep->total_harga,
-                'status' => $resep->status ?? 'belum_bayar',
-                'diagnosa' => optional($resep->catatanLayanan)->diagnosa ?? '-',
+            'pembayaran' => [
+                'id' => $pembayaran->id,
+                'total_harga' => $pembayaran->total_bayar,
+                'status' => $pembayaran->status,
                 'pasien' => [
-                    'nama_lengkap' => $resep->pasien->nama_lengkap,
-                    'nomor_pasien' => $resep->pasien->nomor_pasien,
-                    'nik' => $resep->pasien->nik,
-                    'riwayat_penyakit' => $resep->pasien->riwayat_penyakit,
+                    'nama_lengkap' => $catatan->pasien->nama_lengkap,
+                    'nomor_pasien' => $catatan->pasien->nomor_pasien,
+                    'nik' => $catatan->pasien->nik ?? '-',
                 ],
                 'dokter' => [
-                    'nama' => $resep->dokter->user->name ?? '-',
+                    'nama' => $catatan->dokter->user->name ?? '-',
                 ],
-                'detail' => $resep->resepDetail->map(fn($d) => [
-                    'id' => $d->id,
-                    'nama_obat' => $d->obat->nama_obat ?? '-',
-                    'jumlah' => $d->jumlah,
-                    'satuan' => $d->obat->satuan ?? '-',
-                    'harga' => $d->harga_satuan,
-                    'subtotal' => $d->jumlah * $d->harga_satuan,
+                'detail' => $catatan->detail->map(fn($d) => [
+                    'nama' => $d->layanan->nama_layanan,
+                    'jumlah' => 1,
+                    'harga' => $d->layanan->harga,
+                    'subtotal' => $d->layanan->harga,
                 ]),
             ],
         ]);
@@ -139,9 +158,13 @@ class ResepsionisPembayaranController extends Controller
         ]);
 
         return DB::transaction(function () use ($request, $id) {
-            $resep = Resep::lockForUpdate()->findOrFail($id);
 
-            $total = $resep->total_harga;
+            $pembayaran = Pembayaran::lockForUpdate()
+                ->where('status', 'pending')
+                ->where('klinik_id', auth()->user()->klinik_id)
+                ->findOrFail($id);
+
+            $total = $pembayaran->total_bayar;
             $uang = $request->uang_dibayar;
 
             if ($uang < $total) {
@@ -152,21 +175,11 @@ class ResepsionisPembayaranController extends Controller
 
             $kembalian = $uang - $total;
 
-            // ✅ Ambil pembayaran yang sudah ada (status pending)
-            $pembayaran = Pembayaran::where('resep_id', $resep->id)
-                ->where('status', 'pending')
-                ->firstOrFail();
-
-            $resepsionisId = auth()->user()->id;
-
-            // Update pembayaran utama
             $pembayaran->update([
-                'resepsionis_id' => $resepsionisId,
-                'total_bayar' => $total,
+                'resepsionis_id' => auth()->id(),
                 'status' => 'lunas',
             ]);
 
-            // Update / buat detail pembayaran
             $pembayaran->detail()->updateOrCreate(
                 ['pembayaran_id' => $pembayaran->id],
                 [

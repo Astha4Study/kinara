@@ -57,4 +57,10 @@ class CatatanLayanan extends Model
         return $this->belongsTo(PemeriksaanFisik::class, 'pemeriksaan_fisik_id');
     }
 
+    public function detail()
+    {
+        return $this->hasMany(CatatanLayananDetail::class);
+    }
+
+
 }
