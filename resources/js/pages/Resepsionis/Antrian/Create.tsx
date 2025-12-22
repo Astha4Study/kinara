@@ -17,13 +17,18 @@ interface Pasien {
     umur: number;
 }
 
+interface Klinik {
+    jenis_klinik: string;
+}
+
 interface Props {
     pasien: Pasien;
+    klinik: Klinik;
 }
 
 const today = new Date().toISOString().split('T')[0];
 
-export default function AntrianCreateResepsionis({ pasien }: Props) {
+export default function AntrianCreateResepsionis({ pasien, klinik }: Props) {
     const { data, setData, post, processing, reset, errors } = useForm({
         pasien_id: pasien.id,
         keluhan: '',
@@ -74,6 +79,7 @@ export default function AntrianCreateResepsionis({ pasien }: Props) {
 
                     <FormCreateAntrian
                         data={data}
+                        jenisKlinik={klinik?.jenis_klinik ?? ''}
                         setData={setData}
                         handleSubmit={handleSubmit}
                         processing={processing}

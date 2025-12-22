@@ -1,6 +1,7 @@
 import DataPasienTangani from '@/components/data-pasien-tangani';
 import DataPemeriksaanFisik from '@/components/data-pemeriksaan-fisik';
 import FormCreateCatatanLayananDokter from '@/components/form-create-catatan-layanan-dokter';
+import FormPilihLayanan from '@/components/form-pilih-layanan';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -34,6 +35,13 @@ type Pasien = {
 
 type Klinik = {
     id: number;
+    jenis_klinik: string;
+};
+
+type Layanan = {
+    id: number;
+    nama_layanan: string;
+    harga: number;
 };
 
 type Antrian = {
@@ -57,7 +65,16 @@ type Props = {
     antrian: Antrian;
     pemeriksaan_fisik: PemeriksaanFisik;
     punya_server: number;
+    layanan: Layanan[];
 };
+
+const KlinikNeedPemeriksaanFisik = [
+    'Umum',
+    'Kebidanan & Kandungan',
+    'Anak',
+    'Kulit & Kelamin',
+    'Fisioterapi',
+];
 
 export default function TindakanCreateDokter({
     pasien,
@@ -65,6 +82,7 @@ export default function TindakanCreateDokter({
     antrian,
     punya_server,
     pemeriksaan_fisik,
+    layanan,
 }: Props) {
     const {
         data,
@@ -76,6 +94,9 @@ export default function TindakanCreateDokter({
         errors,
     } = useCatatanLayananStore();
     const [confirmOpen, setConfirmOpen] = useState(false);
+    const butuhPemeriksaanFisik =
+        Boolean(klinik?.jenis_klinik) &&
+        KlinikNeedPemeriksaanFisik.includes(klinik.jenis_klinik);
 
     useEffect(() => {
         reset();
@@ -85,8 +106,11 @@ export default function TindakanCreateDokter({
         setData('antrian_id', antrian.id);
         setData('pasien_id', pasien.id);
         setData('klinik_id', klinik.id);
-        setData('pemeriksaan_fisik_id', pemeriksaan_fisik?.id);
         setData('keluhan_utama', antrian.keluhan ?? '');
+
+        if (butuhPemeriksaanFisik && pemeriksaan_fisik) {
+            setData('pemeriksaan_fisik_id', pemeriksaan_fisik.id);
+        }
     }, [antrian.id, pasien.id, klinik.id, pemeriksaan_fisik?.id]);
 
     useEffect(() => {
@@ -150,8 +174,15 @@ export default function TindakanCreateDokter({
                 <div className="space-y-6">
                     <DataPasienTangani pasien={pasien} />
 
-                    <DataPemeriksaanFisik
-                        pemeriksaanFisik={pemeriksaan_fisik}
+                    {butuhPemeriksaanFisik && pemeriksaan_fisik && (
+                        <DataPemeriksaanFisik
+                            pemeriksaanFisik={pemeriksaan_fisik}
+                        />
+                    )}
+
+                    <FormPilihLayanan
+                        layanan_list={layanan ?? []}
+                        onChange={(items) => setData('layanan', items)}
                     />
 
                     <FormCreateCatatanLayananDokter

@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+type LayananItem = {
+    layanan_id: number;
+    nama_layanan: string;
+    qty: number;
+};
+
 type CatatanForm = {
     antrian_id: number;
     pemeriksaan_fisik_id: number;
@@ -11,6 +17,7 @@ type CatatanForm = {
     diagnosa: string;
     tindakan: string;
     catatan_lain: string;
+    layanan: LayananItem[];
 };
 
 type PersistedSlice = { data: CatatanForm };
@@ -20,6 +27,7 @@ type TransientSlice = {
     setProcessing: (v: boolean) => void;
     setErrors: (e: Record<string, string>) => void;
 };
+
 type Actions = {
     setData: <K extends keyof CatatanForm>(
         key: K,
@@ -40,6 +48,7 @@ const initial: CatatanForm = {
     diagnosa: '',
     tindakan: '',
     catatan_lain: '',
+    layanan: [],
 };
 
 export const useCatatanLayananStore = create<Store>()(
@@ -49,11 +58,17 @@ export const useCatatanLayananStore = create<Store>()(
             processing: false,
             errors: {},
             setData: (key, value) =>
-                set((state) => ({ data: { ...state.data, [key]: value } })),
+                set((state) => ({
+                    data: { ...state.data, [key]: value },
+                })),
             setProcessing: (val) => set({ processing: val }),
             setErrors: (errs) => set({ errors: errs }),
             reset: () =>
-                set({ data: { ...initial }, processing: false, errors: {} }),
+                set({
+                    data: { ...initial },
+                    processing: false,
+                    errors: {},
+                }),
         }),
         {
             name: 'catatan-layanan',

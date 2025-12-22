@@ -25,7 +25,7 @@ class DokterTanganiController extends Controller
     {
         $dokter = Auth::user()->dokter;
 
-        if (!$dokter || $antrian->dokter_id !== $dokter->id) {
+        if (! $dokter || $antrian->dokter_id !== $dokter->id) {
             abort(404, 'Antrian tidak ditemukan untuk dokter ini');
         }
 
@@ -40,7 +40,8 @@ class DokterTanganiController extends Controller
             'antrian' => $antrian->only('id', 'keluhan', 'tanggal_kunjungan'),
             'pasien' => $antrian->pasien->only('id', 'nama_lengkap', 'nomor_pasien', 'nik', 'tanggal_lahir', 'tempat_lahir', 'no_hp', 'golongan_darah', 'riwayat_penyakit', 'alergi'),
             'pemeriksaan_fisik' => $pemeriksaanFisik?->only('id', 'berat_badan', 'tinggi_badan', 'suhu_tubuh', 'tekanan_darah', 'kondisi_khusus'),
-            'klinik' => $antrian->klinik->only('id'),
+            'klinik' => $antrian->klinik->only('id', 'jenis_klinik'),
+
             'punya_server' => $antrian->klinik->punya_server,
         ]);
     }

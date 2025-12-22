@@ -4,19 +4,38 @@ import {
     Building2,
     CheckCircle2,
     Globe2,
+    Image, // <— ikon kamera/gambar
     Mail,
     MapPin,
     Phone,
-    Stethoscope,
     Users,
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface PreviewEditKlinikProps {
     data: any;
 }
 
 const PreviewEditKlinik: React.FC<PreviewEditKlinikProps> = ({ data }) => {
+    /* ---------- logika preview gambar ---------- */
+    const [gambarPreview, setGambarPreview] = useState<string | null>(null);
+
+    useEffect(() => {
+        // jika user baru upload file (File)
+        if (data.gambar instanceof File) {
+            const url = URL.createObjectURL(data.gambar);
+            setGambarPreview(url);
+            return () => URL.revokeObjectURL(url);
+        }
+        // jika backend kasih string url (mode edit)
+        if (typeof data.preview === 'string') {
+            setGambarPreview(data.preview);
+        } else {
+            setGambarPreview(null);
+        }
+    }, [data.gambar, data.preview]);
+    /* ------------------------------------------ */
+
     const kapasitasTerisi =
         (data.kapasitas_total ?? 0) - (data.kapasitas_tersedia ?? 0);
     const okupansi =
@@ -25,19 +44,18 @@ const PreviewEditKlinik: React.FC<PreviewEditKlinikProps> = ({ data }) => {
             : 0;
 
     return (
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md">
             {/* Hero Image */}
-            <div className="relative h-48 overflow-hidden rounded-t-2xl">
-                <img
-                    src={
-                        data.gambar
-                            ? URL.createObjectURL(data.gambar)
-                            : data.preview ||
-                            'https://via.placeholder.com/400x250?text=Preview'
-                    }
-                    alt={data.nama_klinik || 'Preview'}
-                    className="absolute inset-0 h-full w-full object-cover"
-                />
+            <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-t-2xl bg-gray-100">
+                {gambarPreview ? (
+                    <img
+                        src={gambarPreview}
+                        alt={data.nama_klinik || 'Preview'}
+                        className="absolute inset-0 h-full w-full object-cover"
+                    />
+                ) : (
+                    <Image className="h-12 w-12 text-gray-400" />
+                )}
                 <div className="absolute inset-0 bg-black/30" />
 
                 {/* Badge */}
@@ -62,15 +80,17 @@ const PreviewEditKlinik: React.FC<PreviewEditKlinikProps> = ({ data }) => {
                             </p>
                         </div>
                     )}
-                    <h2 className="text-lg font-bold">
+                    <h2 className="line-clamp-2 text-lg font-bold">
                         {data.nama_klinik || 'Nama Klinik'}
                     </h2>
                 </div>
             </div>
 
             {/* Deskripsi */}
-            <div className="p-3 text-sm text-gray-700">
-                {data.deskripsi || 'Belum ada deskripsi klinik.'}
+            <div className="overflow-hidden p-3 text-sm text-gray-700">
+                <p className="line-clamp-3">
+                    {data.deskripsi || 'Belum ada deskripsi klinik.'}
+                </p>
             </div>
 
             {/* Info Ringkas */}
@@ -108,7 +128,7 @@ const PreviewEditKlinik: React.FC<PreviewEditKlinikProps> = ({ data }) => {
             {/* Koordinat */}
             <div className="flex items-center gap-1 border-t border-gray-100 p-3 text-xs text-gray-600">
                 <Globe2 className="h-4 w-4 text-emerald-600" />
-                <span>
+                <span className="truncate">
                     {data.latitude && data.longitude
                         ? `${data.latitude}, ${data.longitude}`
                         : 'Koordinat belum diisi'}

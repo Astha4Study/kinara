@@ -55,10 +55,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('tambah-user', AdminAddResepsionisAndApotekerAndDoktorController::class)
                 ->parameters(['tambah-user' => 'user'])
                 ->names('users')
-                ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+                ->only(['index', 'create', 'store', 'destroy']);
+            Route::resource('users', AdminAddResepsionisAndApotekerAndDoktorController::class)
+                ->parameters(['users' => 'user'])
+                ->only(['show', 'edit', 'update']);
             Route::resource('layanan', AdminLayananController::class)
                 ->parameters(['layanan' => 'layanan'])
-                ->only(['index', 'create', 'edit', 'store', 'update', 'destroy']);
+                ->only(['index', 'create', 'show', 'edit', 'store', 'update', 'destroy']);
             Route::get('/pengaturan', [AdminPengaturanController::class, 'index'])
                 ->name('pengaturan.index');
             Route::put('/pengaturan/update', [AdminPengaturanKlinikController::class, 'update'])

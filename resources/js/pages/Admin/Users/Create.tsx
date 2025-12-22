@@ -1,4 +1,4 @@
-import FormCreateUser from '@/components/form-create-user';
+import FormCreateUser from '@/components/form-create-users-admin';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';

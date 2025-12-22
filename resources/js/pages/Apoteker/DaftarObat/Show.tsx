@@ -98,7 +98,7 @@ export default function DaftarObatShowApoteker({ obat }: Props) {
                     </div>
 
                     {/* Footer tanpa kotak */}
-                    <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
+                    <div className="flex items-end justify-end border-t border-gray-200 bg-gray-50 px-6 py-4">
                         <Link
                             href={`/apoteker/daftar-obat/${obat.id}/edit`}
                             className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"

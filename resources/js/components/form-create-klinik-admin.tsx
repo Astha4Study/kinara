@@ -164,9 +164,11 @@ const FormCreateKlinik: React.FC<FormCreateKlinikProps> = ({
                     <input
                         type="number"
                         value={data.kapasitas_total}
-                        onChange={(e) =>
-                            setData('kapasitas_total', Number(e.target.value))
-                        }
+                        onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setData('kapasitas_total', val);
+                            setData('kapasitas_tersedia', val);
+                        }}
                         className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                         placeholder="100"
                     />
@@ -178,14 +180,8 @@ const FormCreateKlinik: React.FC<FormCreateKlinikProps> = ({
                     <input
                         type="number"
                         value={data.kapasitas_tersedia}
-                        onChange={(e) =>
-                            setData(
-                                'kapasitas_tersedia',
-                                Number(e.target.value),
-                            )
-                        }
-                        className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                        placeholder="80"
+                        disabled
+                        className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-500"
                     />
                 </div>
             </div>
@@ -201,15 +197,17 @@ const FormCreateKlinik: React.FC<FormCreateKlinikProps> = ({
                         type="text"
                         placeholder="Latitude"
                         value={data.latitude}
+                        disabled
                         onChange={(e) => setData('latitude', e.target.value)}
-                        className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        className="rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                     />
                     <input
                         type="text"
                         placeholder="Longitude"
                         value={data.longitude}
+                        disabled
                         onChange={(e) => setData('longitude', e.target.value)}
-                        className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        className="rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                     />
                 </div>
             </div>

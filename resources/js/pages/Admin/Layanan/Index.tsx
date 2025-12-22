@@ -1,3 +1,4 @@
+import DropdownLayananAdmin from '@/components/dropdown-layanan-admin';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -11,6 +12,7 @@ interface Layanan {
     nama_layanan: string;
     harga: number;
     aktif: boolean;
+    updated_at: Date;
     detail_layanan: Array<{ keterangan: string }>;
 }
 
@@ -20,15 +22,20 @@ interface PageProps {
     [key: string]: any;
 }
 
-const tableName = ['nama layanan', 'keterangan', 'harga', 'status', 'aksi'];
+const tableName = [
+    'Nama Layanan',
+    'Keterangan',
+    'Harga',
+    'Status',
+    'Terakhir Diperbarui',
+    'Aksi',
+];
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Daftar Layanan', href: '' }];
 
 export default function LayananIndexAdmin() {
     const { props } = usePage<PageProps>();
-    const { layanan, role } = props;
-
-    const prefix = role === 'super_admin' ? '/super-admin' : '/admin';
+    const { layanan } = props;
 
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -40,26 +47,25 @@ export default function LayananIndexAdmin() {
     };
 
     const toggleSelectAll = () => {
-        if (selectedIds.length === layanan.length) {
-            setSelectedIds([]);
-        } else {
-            setSelectedIds(layanan.map((l) => l.id));
-        }
+        setSelectedIds(
+            selectedIds.length === layanan.length
+                ? []
+                : layanan.map((l) => l.id),
+        );
     };
 
     const deleteSelected = () => {
-        if (selectedIds.length === 0) return;
+        if (!selectedIds.length) return;
+
         if (confirm(`Yakin ingin menghapus ${selectedIds.length} layanan?`)) {
-            selectedIds.forEach((id) =>
-                Inertia.delete(`${prefix}/layanan/${id}`),
-            );
+            selectedIds.forEach((id) => Inertia.delete(`/admin/layanan/${id}`));
             setSelectedIds([]);
         }
     };
 
     const handleDelete = (id: number) => {
         if (confirm('Apakah Anda yakin ingin menghapus layanan ini?')) {
-            Inertia.delete(`${prefix}/layanan/${id}`);
+            Inertia.delete(`/admin/layanan/${id}`);
         }
     };
 
@@ -85,25 +91,26 @@ export default function LayananIndexAdmin() {
                 {/* Action Bar */}
                 <div className="my-4 flex flex-wrap items-center justify-between gap-3">
                     <div className="relative flex gap-3">
-                        <div className="flex">
+                        <div className="relative">
                             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
                                 placeholder="Cari layanan berdasarkan nama..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full min-w-[400px] rounded-lg border border-gray-200 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 transition focus:border-emerald-400 focus:ring-emerald-400"
+                                className="min-w-[400px] rounded-lg border border-gray-200 bg-white py-2.5 pr-4 pl-10 text-sm focus:border-emerald-400 focus:ring-emerald-400"
                             />
                         </div>
-                        <button className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+
+                        <button className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
                             <Filter className="h-4 w-4" />
                             Filter
                         </button>
                     </div>
 
                     <Link
-                        href={`${prefix}/layanan/create`}
-                        className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700"
+                        href="/admin/layanan/create"
+                        className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
                     >
                         <Plus className="h-4 w-4" />
                         Tambah Layanan
@@ -114,9 +121,9 @@ export default function LayananIndexAdmin() {
                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200 bg-gray-50">
-                                    <th className="px-6 py-3 text-left">
+                            <thead className="bg-gray-50">
+                                <tr className="border-b border-gray-200">
+                                    <th className="px-6 py-3">
                                         <input
                                             type="checkbox"
                                             checked={
@@ -125,7 +132,7 @@ export default function LayananIndexAdmin() {
                                                 layanan.length > 0
                                             }
                                             onChange={toggleSelectAll}
-                                            className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                                            className="h-4 w-4 rounded border-gray-300 text-emerald-600"
                                         />
                                     </th>
                                     {tableName.map((v, i) => (
@@ -138,12 +145,13 @@ export default function LayananIndexAdmin() {
                                     ))}
                                 </tr>
                             </thead>
+
                             <tbody className="divide-y divide-gray-100">
-                                {filteredLayanan.length > 0 ? (
+                                {filteredLayanan.length ? (
                                     filteredLayanan.map((l) => (
                                         <tr
                                             key={l.id}
-                                            className="transition hover:bg-gray-50"
+                                            className="hover:bg-gray-50"
                                         >
                                             <td className="px-6 py-4">
                                                 <input
@@ -154,62 +162,70 @@ export default function LayananIndexAdmin() {
                                                     onChange={() =>
                                                         toggleSelect(l.id)
                                                     }
-                                                    className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                                                    className="h-4 w-4 rounded border-gray-300 text-emerald-600"
                                                 />
                                             </td>
+
                                             <td className="px-6 py-4 font-medium text-gray-900">
                                                 {l.nama_layanan}
                                             </td>
+
                                             <td className="px-6 py-4 text-gray-700">
-                                                {l.detail_layanan
-                                                    .map(
-                                                        (d: any) =>
-                                                            d.keterangan,
-                                                    )
-                                                    .join(', ')}
+                                                <div className="line-clamp-2 max-w-md whitespace-normal">
+                                                    {l.detail_layanan
+                                                        .map(
+                                                            (d) => d.keterangan,
+                                                        )
+                                                        .join(', ')}
+                                                </div>
                                             </td>
+
                                             <td className="px-6 py-4 text-gray-700">
                                                 Rp{' '}
                                                 {l.harga.toLocaleString(
                                                     'id-ID',
                                                 )}
                                             </td>
+
                                             <td className="px-6 py-4">
-                                                {l.aktif ? (
-                                                    <Badge className="bg-emerald-100 text-xs font-medium text-emerald-700">
-                                                        Aktif
-                                                    </Badge>
-                                                ) : (
-                                                    <Badge className="bg-red-100 text-xs font-medium text-red-700">
-                                                        Tidak Aktif
-                                                    </Badge>
-                                                )}
-                                            </td>
-                                            <td className="space-x-2 px-6 py-4 text-left">
-                                                <Link
-                                                    href={`${prefix}/layanan/${l.id}/edit`}
-                                                    className="text-emerald-600 hover:text-emerald-700"
-                                                >
-                                                    Edit
-                                                </Link>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDelete(l.id)
+                                                <Badge
+                                                    className={
+                                                        l.aktif
+                                                            ? 'inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700'
+                                                            : 'inline-flex rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
                                                     }
-                                                    className="text-red-600 hover:text-red-700"
                                                 >
-                                                    Hapus
-                                                </button>
+                                                    {l.aktif
+                                                        ? 'Aktif'
+                                                        : 'Tidak Aktif'}
+                                                </Badge>
+                                            </td>
+
+                                            <td className="px-6 py-4 text-gray-700">
+                                                {new Date(
+                                                    l.updated_at,
+                                                ).toLocaleDateString('id-ID', {
+                                                    day: '2-digit',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                })}
+                                            </td>
+
+                                            <td className="space-x-3 px-6 py-4">
+                                                <DropdownLayananAdmin
+                                                    id={l.id}
+                                                    namaLayanan={l.nama_layanan}
+                                                />
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={5}
+                                            colSpan={6}
                                             className="px-6 py-10 text-center text-sm text-gray-500"
                                         >
-                                            Tidak ada layanan.
+                                            Tidak ada layanan
                                         </td>
                                     </tr>
                                 )}
@@ -219,33 +235,31 @@ export default function LayananIndexAdmin() {
                 </div>
 
                 {/* Footer */}
-                <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-                    <p>
-                        Menampilkan {filteredLayanan.length} dari{' '}
-                        {layanan.length} layanan
-                    </p>
+                <div className="mt-4 text-sm text-gray-600">
+                    Menampilkan {filteredLayanan.length} dari {layanan.length}{' '}
+                    layanan
                 </div>
 
-                {/* Selection Action Bar */}
+                {/* Bulk Action */}
                 {selectedIds.length > 0 && (
-                    <div className="fixed bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-4 rounded-lg border border-gray-200 bg-white px-6 py-3 shadow-lg">
+                    <div className="fixed bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-4 rounded-lg border bg-white px-6 py-3 shadow-lg">
                         <span className="text-sm font-medium text-gray-700">
                             {selectedIds.length} layanan dipilih
                         </span>
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={deleteSelected}
-                                className="flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
-                            >
-                                Hapus
-                            </button>
-                            <button
-                                onClick={() => setSelectedIds([])}
-                                className="ml-2 text-gray-400 transition hover:text-gray-600"
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
+
+                        <button
+                            onClick={deleteSelected}
+                            className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                        >
+                            Hapus
+                        </button>
+
+                        <button
+                            onClick={() => setSelectedIds([])}
+                            className="text-gray-400 hover:text-gray-600"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
                     </div>
                 )}
             </div>
