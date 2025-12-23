@@ -79,7 +79,7 @@ export default function AntrianCreateResepsionis({ pasien, klinik }: Props) {
 
                     <FormCreateAntrian
                         data={data}
-                        jenisKlinik={klinik?.jenis_klinik ?? ''}
+                        jenisKlinik={klinik?.jenis_klinik}
                         setData={setData}
                         handleSubmit={handleSubmit}
                         processing={processing}

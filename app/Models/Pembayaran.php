@@ -20,10 +20,19 @@ class Pembayaran extends Model
         'status',
     ];
 
-
     public function resep()
     {
         return $this->belongsTo(Resep::class);
+    }
+
+    public function klinik()
+    {
+        return $this->belongsTo(Klinik::class, 'klinik_id');
+    }
+
+    public function detail()
+    {
+        return $this->hasOne(PembayaranDetail::class, 'pembayaran_id');
     }
 
     public function catatanLayanan()

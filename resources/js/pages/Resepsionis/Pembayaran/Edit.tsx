@@ -1,6 +1,7 @@
 import DataPasienResep from '@/components/data-pasien-resep';
 import FormKalkulatorResepsionis from '@/components/form-kalkulator-resepsionis';
-import TablePembayaranResepsionis from '@/components/table-pembayaran-resepsionis';
+import TableLayananPembayaranResepsionis from '@/components/table-layanan-pembayaran-resepsionis';
+import TableObatPembayaranResepsionis from '@/components/table-obat-pembayaran-resepsionis';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,40 +19,50 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { route } from 'ziggy-js';
 
-type Resep = {
+type Pembayaran = {
     id: number;
     total_harga: number;
     status: string;
-    diagnosa: string;
+
     pasien: {
         nama_lengkap: string;
         nomor_pasien: string;
         nik: string;
-        riwayat_penyakit: string;
     };
-    dokter: {
-        nama: string;
-    };
-    detail: {
+
+    dokter: { nama: string };
+
+    detail_resep: {
         id: number;
-        nama_obat: string;
+        nama: string;
         jumlah: number;
-        satuan: string;
         harga: number;
         subtotal: number;
+        satuan?: string;
     }[];
+
+    detail_layanan: {
+        id: number;
+        nama: string;
+        harga: number;
+        subtotal: number;
+        satuan?: string;
+    }[];
+
+    diagnosa?: string | null;
+    punya_server: number;
 };
 
 type Props = {
-    resep: Resep;
+    pembayaran: Pembayaran;
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Pembayaran Resep', href: '/resepsionis/pembayaran' },
+    { title: 'Pembayaran', href: '/resepsionis/pembayaran' },
     { title: 'Proses Pembayaran', href: '' },
 ];
 
-export default function PembayaranEditResepsionis({ resep }: Props) {
+export default function PembayaranEditResepsionis({ pembayaran }: Props) {
     const { data, setData, put, processing } = useForm({
         uang_dibayar: 0,
         metode_pembayaran: 'cash',
@@ -59,15 +70,22 @@ export default function PembayaranEditResepsionis({ resep }: Props) {
 
     const [openConfirm, setOpenConfirm] = useState(false);
 
+    const totalHarga =
+        pembayaran.detail_resep.reduce((sum, i) => sum + i.subtotal, 0) +
+        pembayaran.detail_layanan.reduce((sum, i) => sum + i.subtotal, 0);
+
     const handleConfirmSubmit = () => {
-        put(route('resepsionis.pembayaran.update', resep.id), {
+        const totalHarga =
+            pembayaran.detail_resep.reduce((sum, i) => sum + i.subtotal, 0) +
+            pembayaran.detail_layanan.reduce((sum, i) => sum + i.subtotal, 0);
+
+        put(route('resepsionis.pembayaran.update', pembayaran.id), {
             preserveScroll: true,
             onSuccess: () => {
                 setOpenConfirm(false);
+                const kembalian = data.uang_dibayar - totalHarga;
                 toast.success('Pembayaran berhasil', {
-                    description: `Kembalian: Rp ${(
-                        data.uang_dibayar - resep.total_harga
-                    ).toLocaleString('id-ID')}`,
+                    description: `Kembalian: Rp ${kembalian.toLocaleString('id-ID')}`,
                 });
             },
             onError: () => {
@@ -80,19 +98,36 @@ export default function PembayaranEditResepsionis({ resep }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Proses Pembayaran Resep" />
+            <Head title="Proses Pembayaran" />
             <div className="p-6">
                 <div className="space-y-6">
                     {/* Data Pasien & Dokter */}
-                    <DataPasienResep
-                        pasien={resep.pasien}
-                        diagnosa={resep.diagnosa}
-                    />
+                    <DataPasienResep pasien={pembayaran.pasien} />
 
-                    <TablePembayaranResepsionis detail={resep.detail} />
+                    <div
+                        className={`grid gap-6 ${
+                            pembayaran.detail_resep.length > 0 &&
+                            pembayaran.detail_layanan.length > 0
+                                ? 'md:grid-cols-2'
+                                : 'md:grid-cols-1'
+                        }`}
+                    >
+                        {pembayaran.detail_resep.length > 0 && (
+                            <TableObatPembayaranResepsionis
+                                detail={pembayaran.detail_resep}
+                            />
+                        )}
+
+                        {pembayaran.detail_layanan.length > 0 && (
+                            <TableLayananPembayaranResepsionis
+                                detail={pembayaran.detail_layanan}
+                            />
+                        )}
+                    </div>
 
                     <FormKalkulatorResepsionis
-                        totalHarga={resep.total_harga}
+                        detailResep={pembayaran.detail_resep}
+                        detailLayanan={pembayaran.detail_layanan}
                         data={data}
                         setData={setData}
                         processing={processing}
@@ -109,8 +144,7 @@ export default function PembayaranEditResepsionis({ resep }: Props) {
                             Konfirmasi Pembayaran
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Apakah kamu yakin ingin memproses pembayaran resep
-                            ini?
+                            Apakah kamu yakin ingin memproses pembayaran ini?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

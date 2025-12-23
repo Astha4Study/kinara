@@ -92,7 +92,9 @@ class ResepsionisAntrianController extends Controller
         return Inertia::render('Resepsionis/Antrian/Create', [
             'pasien' => $pasien,
             'dokter' => $dokter,
-            'jenis_klinik' => $klinik?->jenis_klinik,
+            'klinik' => [
+                'jenis_klinik' => $klinik?->jenis_klinik,
+            ],
         ]);
     }
 

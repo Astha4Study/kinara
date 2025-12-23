@@ -55,15 +55,21 @@ const FormCreateAntrian = ({
                                 Berat Badan{' '}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="number"
-                                required
-                                value={data.berat_badan || ''}
-                                onChange={(e) =>
-                                    setData('berat_badan', e.target.value)
-                                }
-                                className="w-full rounded-lg border px-4 py-2.5"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="number"
+                                    required
+                                    placeholder="Masukkan berat badan"
+                                    value={data.berat_badan || ''}
+                                    onChange={(e) =>
+                                        setData('berat_badan', e.target.value)
+                                    }
+                                    className="w-full rounded-lg border px-4 py-2.5 pr-10 text-sm"
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    kg
+                                </span>
+                            </div>
                         </div>
 
                         {/* Tinggi Badan */}
@@ -71,14 +77,20 @@ const FormCreateAntrian = ({
                             <label className="mb-2 block text-sm font-medium text-gray-700">
                                 Tinggi Badan
                             </label>
-                            <input
-                                type="number"
-                                value={data.tinggi_badan || ''}
-                                onChange={(e) =>
-                                    setData('tinggi_badan', e.target.value)
-                                }
-                                className="w-full rounded-lg border px-4 py-2.5"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="number"
+                                    placeholder="Masukkan tinggi badan"
+                                    value={data.tinggi_badan || ''}
+                                    onChange={(e) =>
+                                        setData('tinggi_badan', e.target.value)
+                                    }
+                                    className="w-full rounded-lg border px-4 py-2.5 pr-10 text-sm"
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    cm
+                                </span>
+                            </div>
                         </div>
 
                         {/* Suhu Tubuh */}
@@ -86,15 +98,21 @@ const FormCreateAntrian = ({
                             <label className="mb-2 block text-sm font-medium text-gray-700">
                                 Suhu Tubuh
                             </label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                value={data.suhu_tubuh || ''}
-                                onChange={(e) =>
-                                    setData('suhu_tubuh', e.target.value)
-                                }
-                                className="w-full rounded-lg border px-4 py-2.5"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    placeholder="Masukkan suhu tubuh"
+                                    value={data.suhu_tubuh || ''}
+                                    onChange={(e) =>
+                                        setData('suhu_tubuh', e.target.value)
+                                    }
+                                    className="w-full rounded-lg border px-4 py-2.5 pr-10 text-sm"
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    °C
+                                </span>
+                            </div>
                         </div>
 
                         {/* Tekanan Darah */}
@@ -103,19 +121,27 @@ const FormCreateAntrian = ({
                                 Tekanan Darah{' '}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                required
-                                value={data.tekanan_darah || ''}
-                                onChange={(e) =>
-                                    setData(
-                                        'tekanan_darah',
-                                        e.target.value.replace(/[^0-9/]/g, ''),
-                                    )
-                                }
-                                placeholder="120/80"
-                                className="w-full rounded-lg border px-4 py-2.5"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="120/80"
+                                    value={data.tekanan_darah || ''}
+                                    onChange={(e) =>
+                                        setData(
+                                            'tekanan_darah',
+                                            e.target.value.replace(
+                                                /[^0-9/]/g,
+                                                '',
+                                            ),
+                                        )
+                                    }
+                                    className="w-full rounded-lg border px-4 py-2.5 pr-10 text-sm"
+                                />
+                                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-gray-500">
+                                    mmHg
+                                </span>
+                            </div>
                         </div>
 
                         {/* Kondisi Khusus */}
@@ -125,11 +151,12 @@ const FormCreateAntrian = ({
                             </label>
                             <textarea
                                 rows={2}
+                                placeholder="Tuliskan kondisi khusus pasien (opsional)"
                                 value={data.kondisi_khusus || ''}
                                 onChange={(e) =>
                                     setData('kondisi_khusus', e.target.value)
                                 }
-                                className="w-full rounded-lg border px-4 py-2.5"
+                                className="w-full rounded-lg border px-4 py-2.5 text-sm"
                             />
                         </div>
                     </div>

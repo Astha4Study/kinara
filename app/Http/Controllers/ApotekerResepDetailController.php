@@ -67,6 +67,7 @@ class ApotekerResepDetailController extends Controller
                 ['resep_id' => $resep->id],
                 [
                     'klinik_id' => $resep->klinik_id,
+                    'catatan_layanan_id' => $resep->catatan_layanan_id,
                     'total_bayar' => $total,
                     'status' => 'pending',
                 ]

@@ -35,7 +35,7 @@ class DokterFinalStoreCatatanLayananController extends Controller
                 ? $cat['pemeriksaan_fisik_id']
                 : null;
 
-            // 1️⃣ Simpan catatan layanan
+            // 1 Simpan catatan layanan
             $catatan = CatatanLayanan::create([
                 'sumber_input' => $antrian->klinik->punya_server ? 'server' : 'manual',
                 'pemeriksaan_fisik_id' => $pemeriksaanFisikId,
@@ -52,7 +52,7 @@ class DokterFinalStoreCatatanLayananController extends Controller
                 'catatan_lain' => $cat['catatan_lain'] ?? '',
             ]);
 
-            // 2️⃣ Simpan detail layanan + hitung total
+            // 2 Simpan detail layanan + hitung total
             $totalBayar = 0;
 
             foreach ($cat['layanan'] as $item) {
@@ -66,7 +66,7 @@ class DokterFinalStoreCatatanLayananController extends Controller
                 $totalBayar += $layanan->harga;
             }
 
-            // 3️⃣ Buat pembayaran (PENDING)
+            // 3 Buat pembayaran (PENDING)
             Pembayaran::create([
                 'klinik_id' => $cat['klinik_id'],
                 'catatan_layanan_id' => $catatan->id,
@@ -75,7 +75,7 @@ class DokterFinalStoreCatatanLayananController extends Controller
                 'resepsionis_id' => null,
             ]);
 
-            // 4️⃣ Update status antrian
+            // 4 Update status antrian
             $antrian->update([
                 'status' => 'Selesai',
             ]);

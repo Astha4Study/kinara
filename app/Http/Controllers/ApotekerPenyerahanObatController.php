@@ -16,7 +16,7 @@ class ApotekerPenyerahanObatController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->hasRole('apoteker')) {
+        if (! $user->hasRole('apoteker')) {
             abort(403, 'Hanya apoteker yang boleh mengakses halaman ini.');
         }
 
@@ -26,12 +26,12 @@ class ApotekerPenyerahanObatController extends Controller
             'pembayaran:id,resep_id,status',
         ])
             ->where('klinik_id', $user->klinik_id)
-            ->whereHas('pembayaran', fn($q) => $q->whereIn('status', ['lunas', 'pending']))
+            ->whereHas('pembayaran', fn ($q) => $q->whereIn('status', ['lunas', 'pending']))
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn($r) => [
+            ->map(fn ($r) => [
                 'id' => $r->id,
-                'nomor_resep' => 'RSP-' . str_pad($r->id, 6, '0', STR_PAD_LEFT),
+                'nomor_resep' => 'RSP-'.str_pad($r->id, 6, '0', STR_PAD_LEFT),
                 'nomor_pasien' => $r->pasien->nomor_pasien ?? '-',
                 'pasien_nama' => $r->pasien->nama_lengkap ?? '-',
                 'dokter_nama' => $r->dokter->user->name ?? '-',
@@ -89,18 +89,18 @@ class ApotekerPenyerahanObatController extends Controller
         $user = auth()->user();
 
         // pastikan hanya apoteker
-        if (!$user->hasRole('apoteker')) {
+        if (! $user->hasRole('apoteker')) {
             abort(403, 'Hanya apoteker yang boleh mengakses halaman ini.');
         }
 
         // ambil resep lunas paling awal untuk klinik ini
         $allowedResep = Resep::with('pembayaran')
             ->where('klinik_id', $user->klinik_id)
-            ->whereHas('pembayaran', fn($q) => $q->where('status', 'lunas'))
+            ->whereHas('pembayaran', fn ($q) => $q->where('status', 'lunas'))
             ->orderBy('created_at', 'asc')
             ->first();
 
-        if (!$allowedResep) {
+        if (! $allowedResep) {
             abort(403, 'Tidak ada resep yang dapat diproses.');
         }
 
@@ -131,9 +131,9 @@ class ApotekerPenyerahanObatController extends Controller
                 'dokter' => [
                     'nama' => $resep->dokter->user->name ?? '-',
                 ],
-                'detail' => $resep->resepDetail->map(fn($d) => [
+                'detail_resep' => $resep->resepDetail->map(fn ($d) => [
                     'id' => $d->id,
-                    'nama_obat' => $d->obat->nama_obat,
+                    'nama' => $d->obat->nama_obat,
                     'jumlah' => $d->jumlah,
                     'satuan' => $d->obat->satuan,
                     'harga' => $d->harga_satuan,

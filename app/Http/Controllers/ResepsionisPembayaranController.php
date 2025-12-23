@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pembayaran;
-use App\Models\Resep;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -53,7 +51,6 @@ class ResepsionisPembayaranController extends Controller
         ]);
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -90,38 +87,41 @@ class ResepsionisPembayaranController extends Controller
             'catatanLayanan.pasien',
             'catatanLayanan.dokter.user',
             'catatanLayanan.detail.layanan',
+            'klinik',
         ])
             ->where('status', 'pending')
             ->where('klinik_id', auth()->user()->klinik_id)
             ->findOrFail($id);
 
-        if ($pembayaran->resep_id) {
-            $resep = $pembayaran->resep;
+        $pasien = $pembayaran->resep_id
+            ? $pembayaran->resep->pasien
+            : $pembayaran->catatanLayanan->pasien;
 
-            return Inertia::render('Resepsionis/Pembayaran/Edit', [
-                'pembayaran' => [
-                    'id' => $pembayaran->id,
-                    'total_harga' => $pembayaran->total_bayar,
-                    'status' => $pembayaran->status,
-                    'pasien' => [
-                        'nama_lengkap' => $resep->pasien->nama_lengkap,
-                        'nomor_pasien' => $resep->pasien->nomor_pasien,
-                        'nik' => $resep->pasien->nik,
-                    ],
-                    'dokter' => [
-                        'nama' => $resep->dokter->user->name ?? '-',
-                    ],
-                    'detail' => $resep->resepDetail->map(fn($d) => [
-                        'nama' => $d->obat->nama_obat,
-                        'jumlah' => $d->jumlah,
-                        'harga' => $d->harga_satuan,
-                        'subtotal' => $d->jumlah * $d->harga_satuan,
-                    ]),
-                ],
-            ]);
-        }
+        $dokter = $pembayaran->resep_id
+            ? $pembayaran->resep->dokter
+            : $pembayaran->catatanLayanan->dokter;
 
-        $catatan = $pembayaran->catatanLayanan;
+        $detailResep = $pembayaran->resep_id
+            ? $pembayaran->resep->resepDetail->map(fn ($d) => [
+                'id' => $d->id,
+                'nama' => $d->obat->nama_obat,
+                'jumlah' => $d->jumlah,
+                'satuan' => $d->satuan ?? '',
+                'harga' => $d->harga_satuan,
+                'subtotal' => $d->jumlah * $d->harga_satuan,
+            ])
+            : collect();
+
+        $detailLayanan = $pembayaran->catatan_layanan_id
+            ? $pembayaran->catatanLayanan->detail->map(fn ($d) => [
+                'id' => $d->id,
+                'nama' => $d->layanan->nama_layanan,
+                'jumlah' => 1,
+                'satuan' => '-',
+                'harga' => $d->layanan->harga,
+                'subtotal' => $d->layanan->harga,
+            ])
+            : collect();
 
         return Inertia::render('Resepsionis/Pembayaran/Edit', [
             'pembayaran' => [
@@ -129,76 +129,88 @@ class ResepsionisPembayaranController extends Controller
                 'total_harga' => $pembayaran->total_bayar,
                 'status' => $pembayaran->status,
                 'pasien' => [
-                    'nama_lengkap' => $catatan->pasien->nama_lengkap,
-                    'nomor_pasien' => $catatan->pasien->nomor_pasien,
-                    'nik' => $catatan->pasien->nik ?? '-',
+                    'nama_lengkap' => $pasien->nama_lengkap ?? '-',
+                    'nomor_pasien' => $pasien->nomor_pasien ?? '-',
+                    'nik' => $pasien->nik ?? '-',
+                    'riwayat_penyakit' => $pasien->riwayat_penyakit ?? null,
                 ],
                 'dokter' => [
-                    'nama' => $catatan->dokter->user->name ?? '-',
+                    'nama' => $dokter->user->name ?? '-',
                 ],
-                'detail' => $catatan->detail->map(fn($d) => [
-                    'nama' => $d->layanan->nama_layanan,
-                    'jumlah' => 1,
-                    'harga' => $d->layanan->harga,
-                    'subtotal' => $d->layanan->harga,
-                ]),
+                'detail_resep' => $detailResep,
+                'detail_layanan' => $detailLayanan,
+                'diagnosa' => $pembayaran->catatanLayanan->diagnosa ?? null,
+                'punya_server' => $pembayaran->klinik->punya_server ?? 0,
             ],
         ]);
     }
-
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'uang_dibayar' => 'required|numeric|min:0',
-            'metode_pembayaran' => 'nullable|string',
+{
+    $request->validate([
+        'uang_dibayar' => 'required|numeric|min:0',
+        'metode_pembayaran' => 'nullable|string',
+    ]);
+
+    return DB::transaction(function () use ($request, $id) {
+
+        $pembayaran = Pembayaran::with([
+            'resep.resepDetail',
+            'catatanLayanan.detail.layanan',
+        ])
+            ->lockForUpdate()
+            ->where('status', 'pending')
+            ->where('klinik_id', auth()->user()->klinik_id)
+            ->findOrFail($id);
+
+        // Hitung ulang total dari resep dan layanan
+        $totalResep = $pembayaran->resep_id
+            ? $pembayaran->resep->resepDetail->sum(fn ($d) => $d->jumlah * $d->harga_satuan)
+            : 0;
+
+        $totalLayanan = $pembayaran->catatan_layanan_id
+            ? $pembayaran->catatanLayanan->detail->sum(fn ($d) => $d->layanan->harga)
+            : 0;
+
+        $total = $totalResep + $totalLayanan;
+
+        $uang = $request->uang_dibayar;
+
+        if ($uang < $total) {
+            return back()->withErrors([
+                'uang_dibayar' => 'Uang yang dibayarkan kurang dari total harga.',
+            ]);
+        }
+
+        $kembalian = $uang - $total;
+
+        $pembayaran->update([
+            'resepsionis_id' => auth()->id(),
+            'status' => 'lunas',
+            'total_bayar' => $total, 
         ]);
 
-        return DB::transaction(function () use ($request, $id) {
+        $pembayaran->detail()->updateOrCreate(
+            ['pembayaran_id' => $pembayaran->id],
+            [
+                'uang_dibayar'      => $uang,
+                'kembalian'         => $kembalian,
+                'metode_pembayaran' => $request->metode_pembayaran ?? 'cash',
+            ]
+        );
 
-            $pembayaran = Pembayaran::lockForUpdate()
-                ->where('status', 'pending')
-                ->where('klinik_id', auth()->user()->klinik_id)
-                ->findOrFail($id);
-
-            $total = $pembayaran->total_bayar;
-            $uang = $request->uang_dibayar;
-
-            if ($uang < $total) {
-                return back()->withErrors([
-                    'uang_dibayar' => 'Uang yang dibayarkan kurang dari total harga.',
-                ]);
-            }
-
-            $kembalian = $uang - $total;
-
-            $pembayaran->update([
-                'resepsionis_id' => auth()->id(),
-                'status' => 'lunas',
-            ]);
-
-            $pembayaran->detail()->updateOrCreate(
-                ['pembayaran_id' => $pembayaran->id],
-                [
-                    'uang_dibayar' => $uang,
-                    'kembalian' => $kembalian,
-                    'metode_pembayaran' => $request->metode_pembayaran ?? 'cash',
-                ]
+        return redirect()
+            ->route('resepsionis.pembayaran.index')
+            ->with(
+                'success',
+                'Pembayaran berhasil. Kembalian: Rp ' .
+                number_format($kembalian, 0, ',', '.')
             );
-
-            return redirect()
-                ->route('resepsionis.pembayaran.index')
-                ->with(
-                    'success',
-                    'Pembayaran berhasil. Kembalian: Rp ' .
-                    number_format($kembalian, 0, ',', '.')
-                );
-        });
-    }
-
+    });
+}
 
     /**
      * Remove the specified resource from storage.

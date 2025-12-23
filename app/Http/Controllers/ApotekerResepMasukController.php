@@ -18,7 +18,7 @@ class ApotekerResepMasukController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->hasRole('apoteker')) {
+        if (! $user->hasRole('apoteker')) {
             abort(403, 'Hanya apoteker yang boleh mengakses halaman ini.');
         }
 
@@ -30,7 +30,7 @@ class ApotekerResepMasukController extends Controller
             ->whereIn('status', ['pending', 'sedang_dibuat'])
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'id' => $item->id,
                 'pasien_nama' => $item->pasien->nama_lengkap,
                 'nomor_pasien' => $item->pasien->nomor_pasien,
@@ -79,6 +79,7 @@ class ApotekerResepMasukController extends Controller
             'pasien.pemeriksaanFisik',
             'catatanLayanan:id,diagnosa',
             'resepDetail.obat:id,nama_obat,satuan,harga',
+            'klinik:id,punya_server', 
         ])->findOrFail($id);
 
         $obatMaster = Obat::where('klinik_id', $resep->klinik_id)
@@ -91,7 +92,6 @@ class ApotekerResepMasukController extends Controller
                 'id' => $resep->id,
                 'status' => $resep->status,
                 'total_harga' => $resep->total_harga,
-
                 'resep_teks' => $resep->resep_teks,
 
                 'pasien' => [
@@ -101,6 +101,7 @@ class ApotekerResepMasukController extends Controller
                 ],
 
                 'diagnosa' => $resep->catatanLayanan->diagnosa ?? '-',
+                'punya_server' => $resep->klinik->punya_server ?? 0,
 
                 'pemeriksaan_fisik' => [
                     'berat_badan' => $resep->pasien->pemeriksaanFisik->berat_badan ?? null,
@@ -110,7 +111,7 @@ class ApotekerResepMasukController extends Controller
                     'kondisi_khusus' => $resep->pasien->pemeriksaanFisik->kondisi_khusus ?? null,
                 ],
 
-                'detail' => $resep->resepDetail->map(fn($d) => [
+                'detail' => $resep->resepDetail->map(fn ($d) => [
                     'obat_id' => $d->obat->id,
                     'nama_obat' => $d->obat->nama_obat,
                     'jumlah' => $d->jumlah,
@@ -144,6 +145,8 @@ class ApotekerResepMasukController extends Controller
             ]);
         } else {
             Pembayaran::create([
+                'klinik_id' => $resep->klinik_id,
+                'catatan_layanan_id' => $resep->catatan_layanan_id,
                 'resep_id' => $resep->id,
                 'resepsionis_id' => auth()->id(),
                 'total_bayar' => $resep->total_harga,

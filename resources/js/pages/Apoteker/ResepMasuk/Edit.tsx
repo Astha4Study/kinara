@@ -1,4 +1,4 @@
-import DataPasienResep from '@/components/data-pasien-resep';
+import DataPasienResepLengkap from '@/components/data-pasien-resep-lengkap';
 import DataPemeriksaanFisik from '@/components/data-pemeriksaan-fisik';
 import DataResepTeks from '@/components/data-resep-teks';
 import FormCreateResep from '@/components/form-create-resep';
@@ -49,6 +49,8 @@ type Resep = {
         harga: number;
         subtotal: number;
     }[];
+
+    punya_server: number;
 };
 
 type Props = {
@@ -99,9 +101,10 @@ export default function ResepMasukEditApoteker({ resep, obatMaster }: Props) {
             <Head title="Siapkan Obat Pasien" />
             <div className="space-y-6 p-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <DataPasienResep
+                    <DataPasienResepLengkap
                         pasien={resep.pasien}
                         diagnosa={resep.diagnosa}
+                        punya_server={resep.punya_server}
                     />
                     <DataPemeriksaanFisik
                         pemeriksaanFisik={resep.pemeriksaan_fisik}

@@ -13,7 +13,6 @@ class DokterFinalStoreResepAndCatatanLayananController extends Controller
 {
     public function storeFinal(Request $request)
     {
-
         $request->validate([
             'catatan.antrian_id' => 'required|integer|exists:antrian,id',
             'catatan.pasien_id' => 'required|integer|exists:pasien,id',
@@ -32,11 +31,11 @@ class DokterFinalStoreResepAndCatatanLayananController extends Controller
         DB::transaction(function () use ($cat, $antrian, $resepTeks, $dokterId) {
 
             $pemeriksaanFisikId =
-                !empty($cat['pemeriksaan_fisik_id']) && $cat['pemeriksaan_fisik_id'] > 0
+                ! empty($cat['pemeriksaan_fisik_id']) && $cat['pemeriksaan_fisik_id'] > 0
                 ? $cat['pemeriksaan_fisik_id']
                 : null;
 
-            // 1 Simpan catatan layanan (rekam medis)
+            // Simpan catatan layanan
             $catatan = CatatanLayanan::create([
                 'sumber_input' => $antrian->klinik->punya_server ? 'server' : 'manual',
                 'pemeriksaan_fisik_id' => $pemeriksaanFisikId,
@@ -53,7 +52,7 @@ class DokterFinalStoreResepAndCatatanLayananController extends Controller
                 'catatan_lain' => $cat['catatan_lain'] ?? '',
             ]);
 
-            // 2️ Simpan detail layanan
+            // Simpan detail layanan
             foreach ($cat['layanan'] as $item) {
                 CatatanLayananDetail::create([
                     'catatan_layanan_id' => $catatan->id,
@@ -61,7 +60,7 @@ class DokterFinalStoreResepAndCatatanLayananController extends Controller
                 ]);
             }
 
-            // 3️ Simpan resep
+            // Simpan resep (pending)
             Resep::create([
                 'catatan_layanan_id' => $catatan->id,
                 'pasien_id' => $cat['pasien_id'],
@@ -71,7 +70,7 @@ class DokterFinalStoreResepAndCatatanLayananController extends Controller
                 'status' => 'pending',
             ]);
 
-            // 4️ Update antrian
+            // Update status antrian
             $antrian->update([
                 'status' => 'Selesai',
             ]);
@@ -79,6 +78,6 @@ class DokterFinalStoreResepAndCatatanLayananController extends Controller
 
         return redirect()
             ->route('dokter.antrian.index')
-            ->with('success', 'Catatan dan resep berhasil dikirim');
+            ->with('success', 'Catatan layanan dan resep berhasil disimpan');
     }
 }
