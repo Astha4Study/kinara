@@ -154,16 +154,17 @@ const HeroSection = () => {
                 <div className="relative z-10 flex h-full items-center justify-center px-6 md:mb-20">
                     <div className="w-full max-w-5xl text-center text-white">
                         <span className="mb-4 inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-light tracking-wide text-white backdrop-blur-xs">
-                            Ribuan Klinik Terverifikasi
+                            Ribuan Klinik Terverifikasi di Sekitar Anda
                         </span>
                         <h1 className="text-3xl leading-tight font-bold md:text-4xl">
-                            Bandingkan & Temukan Klinik Kesehatan Terbaik &
-                            Terdekat di Sekitar Anda
+                            Temukan & Bandingkan Klinik Kesehatan Terbaik di
+                            Lokasi Terdekat Anda
                         </h1>
                         <p className="mx-auto mt-3 max-w-2xl text-base text-gray-100 md:text-lg">
-                            Lihat rating, fasilitas, foto, ulasan asli pasien,
-                            dan lokasi klinik terdekat. Pilih yang paling sesuai
-                            untuk kebutuhan kesehatan Anda.
+                            Bandingkan rating, fasilitas, layanan, ulasan pasien
+                            asli, serta lokasi klinik secara mudah dan
+                            transparan untuk menentukan pilihan terbaik bagi
+                            kebutuhan kesehatan Anda.
                         </p>
                     </div>
                 </div>

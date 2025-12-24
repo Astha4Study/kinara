@@ -75,11 +75,19 @@ export default function NearLocation({ kliniks }: Props) {
         <section className="bg-white px-6 py-20 md:px-12 lg:px-20">
             <div className="mx-auto max-w-7xl">
                 <div className="mx-auto mb-14 max-w-4xl text-center">
+                    <span className="mb-3 inline-block rounded-full border border-emerald-600 bg-white px-3 py-1.5 text-xs font-medium tracking-wide text-emerald-700 shadow-sm">
+                        Berdasarkan Lokasi Anda
+                    </span>
+
                     <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">
-                        Klinik Terdekat
+                        Klinik Terdekat dari Lokasi Anda
                     </h2>
+
                     <p className="mt-4 text-base text-gray-600">
-                        Temukan klinik terdekat dengan akses mudah.
+                        Daftar klinik yang berada paling dekat dengan lokasi
+                        Anda, lengkap dengan informasi rating, jenis layanan,
+                        dan fasilitas untuk membantu Anda memilih dengan cepat
+                        dan tepat.
                     </p>
                 </div>
 
