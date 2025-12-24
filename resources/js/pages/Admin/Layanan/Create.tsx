@@ -2,6 +2,7 @@ import FormCreateLayanan from '@/components/form-create-layanan-admin';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+import { toast } from 'sonner';
 
 export default function LayananCreateAdmin() {
     const { data, setData, post, processing, reset } = useForm({
@@ -14,7 +15,13 @@ export default function LayananCreateAdmin() {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post('/admin/layanan', {
-            onSuccess: () => reset(),
+            onSuccess: () => {
+                reset();
+                toast.success('Layanan berhasil ditambahkan');
+            },
+            onError: () => {
+                toast.error('Layanan gagal dibuat');
+            },
         });
     };
 

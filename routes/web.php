@@ -11,9 +11,13 @@ use App\Http\Controllers\ApotekerPenyerahanObatController;
 use App\Http\Controllers\ApotekerResepController;
 use App\Http\Controllers\ApotekerResepDetailController;
 use App\Http\Controllers\ApotekerResepMasukController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientKlinikController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DokterAntrianController;
 use App\Http\Controllers\DokterCatatanLayananController;
-use App\Http\Controllers\DokterFinalStoreController;
+use App\Http\Controllers\DokterFinalStoreCatatanLayananController;
+use App\Http\Controllers\DokterFinalStoreResepAndCatatanLayananController;
 use App\Http\Controllers\DokterKlinikController;
 use App\Http\Controllers\DokterPasienController;
 use App\Http\Controllers\DokterResepController;
@@ -27,12 +31,13 @@ use App\Http\Controllers\SuperAdminAddAdminController;
 use App\Http\Controllers\SuperAdminKlinikController;
 use App\Http\Controllers\SuperAdminPasienController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', fn () => Inertia::render('welcome'))->name('home');
+Route::get('/', [ClientController::class, 'index'])->name('home');
+Route::get('/klinik/{slug}', [ClientKlinikController::class, 'show'])
+    ->name('klinik.detail');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth', 'verified']);
 
     Route::middleware(['auth', 'role:super_admin'])
         ->prefix('super-admin')
@@ -55,10 +60,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('tambah-user', AdminAddResepsionisAndApotekerAndDoktorController::class)
                 ->parameters(['tambah-user' => 'user'])
                 ->names('users')
-                ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+                ->only(['index', 'create', 'store', 'destroy']);
+            Route::resource('users', AdminAddResepsionisAndApotekerAndDoktorController::class)
+                ->parameters(['users' => 'user'])
+                ->only(['show', 'edit', 'update']);
             Route::resource('layanan', AdminLayananController::class)
                 ->parameters(['layanan' => 'layanan'])
-                ->only(['index', 'create', 'edit', 'store', 'update', 'destroy']);
+                ->only(['index', 'create', 'show', 'edit', 'store', 'update', 'destroy']);
             Route::get('/pengaturan', [AdminPengaturanController::class, 'index'])
                 ->name('pengaturan.index');
             Route::put('/pengaturan/update', [AdminPengaturanKlinikController::class, 'update'])
@@ -115,8 +123,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('tangani.store');
             Route::get('antrian/{antrian}/resep/create', [DokterResepController::class, 'create'])
                 ->name('resep.create');
-            Route::post('store-final', [DokterFinalStoreController::class, 'storeFinal'])
+            Route::post('store-final', [DokterFinalStoreResepAndCatatanLayananController::class, 'storeFinal'])
                 ->name('resep.store-final');
+            Route::post('final-store', [DokterFinalStoreCatatanLayananController::class, 'FinalStore'])
+                ->name('resep.final-store');
         });
 
     Route::middleware(['auth', 'role:apoteker'])

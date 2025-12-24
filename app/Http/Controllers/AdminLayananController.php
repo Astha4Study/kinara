@@ -24,7 +24,7 @@ class AdminLayananController extends Controller
 
         return Inertia::render('Admin/Layanan/Index', [
             'layanan' => $layanan,
-            'role' => Auth::user()->role
+            'role' => Auth::user()->role,
         ]);
     }
 
@@ -72,7 +72,16 @@ class AdminLayananController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = Auth::user();
+
+        $layanan = Layanan::with('detail_layanan')
+            ->where('id', $id)
+            ->where('klinik_id', $user->klinik_id)
+            ->firstOrFail();
+
+        return Inertia::render('Admin/Layanan/Show', [
+            'layanan' => $layanan,
+        ]);
     }
 
     /**
@@ -112,7 +121,7 @@ class AdminLayananController extends Controller
             'nama_layanan' => 'required|string|max:255',
             'harga' => 'required|integer|min:0',
             'aktif' => 'boolean',
-            'keterangan' => 'required|string'
+            'keterangan' => 'required|string',
         ]);
 
         $layanan->update([
@@ -126,7 +135,7 @@ class AdminLayananController extends Controller
         $detail_layanan = array_map('trim', explode(',', $validated['keterangan']));
 
         foreach ($detail_layanan as $det) {
-            if (!empty($det)) {
+            if (! empty($det)) {
                 $layanan->detail_layanan()->create([
                     'klinik_id' => $user->klinik_id,
                     'keterangan' => $det,

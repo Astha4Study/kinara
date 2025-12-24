@@ -38,7 +38,7 @@ const statusBadge: Record<
     { label: string; className: string }
 > = {
     pending: {
-        label: 'Menunggu Pembayaran',
+        label: 'Pending',
         className: 'bg-blue-100 text-blue-700',
     },
     belum_bayar: {
@@ -46,7 +46,7 @@ const statusBadge: Record<
         className: 'bg-yellow-100 text-yellow-700',
     },
     lunas: {
-        label: 'Sudah Dibayar',
+        label: 'Lunas',
         className: 'bg-green-100 text-green-700',
     },
 };
@@ -57,9 +57,8 @@ export default function PembayaranIndexResepsionis() {
 
     const filtered = reseps.filter(
         (r) =>
-            ['pending', 'belum_bayar', 'lunas'].includes(r.status_pembayaran) &&
-            (r.pasien_nama.toLowerCase().includes(search.toLowerCase()) ||
-                r.nomor_pasien.toLowerCase().includes(search.toLowerCase())),
+            r.pasien_nama.toLowerCase().includes(search.toLowerCase()) ||
+            r.nomor_pasien.toLowerCase().includes(search.toLowerCase()),
     );
 
     const formatRupiah = (value: number) =>

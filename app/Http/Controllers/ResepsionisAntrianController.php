@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Antrian;
 use App\Models\Dokter;
+use App\Models\Klinik;
 use App\Models\Pasien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class ResepsionisAntrianController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->hasRole('resepsionis')) {
+        if (! $user->hasRole('resepsionis')) {
             abort(403);
         }
 
@@ -27,7 +28,7 @@ class ResepsionisAntrianController extends Controller
             'dokter' => function ($q) {
                 $q->select('id', 'user_id', 'klinik_id', 'status', 'antrian_saat_ini');
                 $q->with(['user:id,name']);
-            }
+            },
 
         ])
             ->where('klinik_id', $user->klinik_id)
@@ -47,7 +48,6 @@ class ResepsionisAntrianController extends Controller
                 ];
             });
 
-
         return Inertia::render('Resepsionis/Antrian/Index', [
             'antrian' => $antrian,
         ]);
@@ -66,9 +66,10 @@ class ResepsionisAntrianController extends Controller
      */
     public function createForPasien($pasienId)
     {
+
         $user = Auth::user();
 
-        if (!$user->hasRole('resepsionis')) {
+        if (! $user->hasRole('resepsionis')) {
             abort(403);
         }
 
@@ -79,14 +80,21 @@ class ResepsionisAntrianController extends Controller
             ->where('status', 'tersedia')
             ->with('user:id,name')
             ->get()
-            ->map(fn($d) => [
+            ->map(fn ($d) => [
                 'id' => $d->id,
-                'name' => $d->user->name
+                'name' => $d->user->name,
             ]);
+
+        $klinik = Klinik::select('jenis_klinik')
+            ->where('id', $user->klinik_id)
+            ->first();
 
         return Inertia::render('Resepsionis/Antrian/Create', [
             'pasien' => $pasien,
             'dokter' => $dokter,
+            'klinik' => [
+                'jenis_klinik' => $klinik?->jenis_klinik,
+            ],
         ]);
     }
 
@@ -95,7 +103,7 @@ class ResepsionisAntrianController extends Controller
      */
     public function store(Request $request)
     {
-        // 
+        //
     }
 
     /**
@@ -117,9 +125,24 @@ class ResepsionisAntrianController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Antrian $antrian)
     {
-        //
+        $user = Auth::user();
+
+        if (! $user->hasRole('resepsionis') || $antrian->klinik_id !== $user->klinik_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'alasan' => 'required|string|max:255',
+        ]);
+
+        $antrian->update([
+            'status' => 'Dibatalkan',
+            'alasan_dibatalkan' => $request->input('alasan'),
+        ]);
+
+        return redirect()->back()->with('success', 'Antrian berhasil dibatalkan.');
     }
 
     /**

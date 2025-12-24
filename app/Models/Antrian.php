@@ -19,6 +19,7 @@ class Antrian extends Model
         'klinik_id',
         'keluhan',
         'status',
+        'alasan_dibatalkan',
         'tanggal_kunjungan',
     ];
 
@@ -45,7 +46,7 @@ class Antrian extends Model
 
             $user = Auth::user();
 
-            if (!$user || !$user->hasRole('resepsionis')) {
+            if (! $user || ! $user->hasRole('resepsionis')) {
                 throw new \Exception('Hanya resepsionis yang dapat menambahkan antrian.');
             }
 

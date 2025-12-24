@@ -1,7 +1,19 @@
 import FormEditLayananAdmin from '@/components/form-edit-layanan-admin';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 type Layanan = {
     id: number;
@@ -21,32 +33,57 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function LayananEditAdmin({ layanan }: Props) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, processing, errors } = useForm({
         nama_layanan: layanan.nama_layanan || '',
         harga: layanan.harga || '',
-        aktif: layanan.aktif || true,
+        aktif: layanan.aktif ?? true,
         keterangan:
             layanan.detail_layanan?.map((d) => d.keterangan).join(', ') || '',
     });
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [isDirty, setIsDirty] = useState(false);
 
+    const isEqual = (a: any, b: any) => JSON.stringify(a) === JSON.stringify(b);
+
+    useEffect(() => {
+        const original = {
+            nama_layanan: layanan.nama_layanan || '',
+            harga: layanan.harga || '',
+            aktif: layanan.aktif ?? true,
+            keterangan:
+                layanan.detail_layanan?.map((d) => d.keterangan).join(', ') ||
+                '',
+        };
+        setIsDirty(!isEqual(data, original));
+    }, [data, layanan]);
+
+    const realSubmit = () => {
         const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                formData.append(key, value as any);
-            }
+        Object.entries(data).forEach(([k, v]) => {
+            if (v !== undefined && v !== null) formData.append(k, v as any);
         });
 
         router.post(`/admin/layanan/${layanan.id}?_method=PUT`, formData, {
             onSuccess: () => {
-                console.log('✅ Data layanan berhasil diperbarui');
+                toast.success('Layanan berhasil diperbarui', {
+                    description:
+                        'Data layanan telah berhasil disimpan ke sistem.',
+                });
             },
             onError: (err) => {
-                console.error('❌ Error:', err);
+                toast.error('Gagal memperbarui layanan', {
+                    description:
+                        'Terjadi kesalahan saat menyimpan data layanan.',
+                });
+                console.error(err);
             },
         });
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setAlertOpen(true);
     };
 
     return (
@@ -67,10 +104,32 @@ export default function LayananEditAdmin({ layanan }: Props) {
                         setData={setData}
                         handleSubmit={handleSubmit}
                         processing={processing}
+                        isDirty={isDirty}
                         errors={errors}
                     />
                 </div>
             </div>
+
+            {/* Alert */}
+            <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Konfirmasi Perubahan
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Pastikan seluruh informasi layanan sudah benar
+                            sebelum menyimpan.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction onClick={realSubmit}>
+                            Simpan
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

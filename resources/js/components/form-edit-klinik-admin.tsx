@@ -17,6 +17,7 @@ interface FormEditKlinikAdminProps {
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     handleChangeFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
     processing: boolean;
+    isDirty: boolean;
     errors?: Record<string, string>;
 }
 
@@ -26,6 +27,7 @@ const FormEditKlinikAdmin: React.FC<FormEditKlinikAdminProps> = ({
     handleSubmit,
     handleChangeFile,
     processing,
+    isDirty,
     errors = {},
 }) => {
     return (
@@ -182,7 +184,7 @@ const FormEditKlinikAdmin: React.FC<FormEditKlinikAdminProps> = ({
                         placeholder="Latitude"
                         value={data.latitude}
                         onChange={(e) => setData('latitude', e.target.value)}
-                        className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        className="rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-700 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                     />
                     <input
                         type="text"
@@ -190,7 +192,7 @@ const FormEditKlinikAdmin: React.FC<FormEditKlinikAdminProps> = ({
                         placeholder="Longitude"
                         value={data.longitude}
                         onChange={(e) => setData('longitude', e.target.value)}
-                        className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        className="rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-700 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                     />
                 </div>
             </div>
@@ -254,9 +256,11 @@ const FormEditKlinikAdmin: React.FC<FormEditKlinikAdminProps> = ({
                 </Link>
                 <button
                     type="submit"
-                    disabled={processing}
-                    className={`rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 ${
-                        processing ? 'cursor-not-allowed opacity-70' : ''
+                    disabled={processing || !isDirty}
+                    className={`rounded-lg px-4 py-2.5 text-sm font-medium text-white transition disabled:cursor-not-allowed ${
+                        processing || !isDirty
+                            ? 'bg-emerald-600 opacity-50'
+                            : 'bg-emerald-600 hover:bg-emerald-700'
                     }`}
                 >
                     {processing ? 'Menyimpan...' : 'Simpan Perubahan'}

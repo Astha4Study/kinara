@@ -1,6 +1,7 @@
 import DataPasienTangani from '@/components/data-pasien-tangani';
 import DataPemeriksaanFisik from '@/components/data-pemeriksaan-fisik';
 import FormCreateCatatanLayananDokter from '@/components/form-create-catatan-layanan-dokter';
+import FormPilihLayanan from '@/components/form-pilih-layanan';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,53 +12,31 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/app-layout';
 import { useCatatanLayananStore } from '@/stores/catatan-layanan.store';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'sonner';
-
-type Pasien = {
-    id: number;
-    klinik_id: number;
-    nama_lengkap: string;
-    nomor_pasien?: string;
-    nik?: string | number;
-    tanggal_lahir?: string | null;
-    tempat_lahir?: string;
-    no_hp?: string | number;
-    golongan_darah?: string | null;
-    riwayat_penyakit?: string | null;
-    alergi?: string | null;
-};
-
-type Klinik = {
-    id: number;
-};
-
-type Antrian = {
-    id: number;
-    keluhan?: string | null;
-    tanggal_kunjungan?: string;
-};
-
-type PemeriksaanFisik = {
-    id: number;
-    berat_badan: number | null;
-    tinggi_badan: number | null;
-    suhu_tubuh: number | null;
-    tekanan_darah: string | null;
-    kondisi_khusus: string | null;
-};
+import { route } from 'ziggy-js';
 
 type Props = {
-    pasien: Pasien;
-    klinik: Klinik;
-    antrian: Antrian;
-    pemeriksaan_fisik: PemeriksaanFisik;
+    pasien: any;
+    klinik: any;
+    antrian: any;
+    pemeriksaan_fisik: any;
     punya_server: number;
+    layanan: any[];
 };
+
+const KlinikNeedPemeriksaanFisik = [
+    'Umum',
+    'Kebidanan & Kandungan',
+    'Anak',
+    'Kulit & Kelamin',
+    'Fisioterapi',
+];
 
 export default function TindakanCreateDokter({
     pasien,
@@ -65,6 +44,7 @@ export default function TindakanCreateDokter({
     antrian,
     punya_server,
     pemeriksaan_fisik,
+    layanan,
 }: Props) {
     const {
         data,
@@ -75,7 +55,16 @@ export default function TindakanCreateDokter({
         processing,
         errors,
     } = useCatatanLayananStore();
-    const [confirmOpen, setConfirmOpen] = useState(false);
+
+    const [butuhResep, setButuhResep] = React.useState<boolean>(
+        data.butuh_resep,
+    );
+    const [confirmOpen, setConfirmOpen] = React.useState(false);
+    const [confirmNoResepOpen, setConfirmNoResepOpen] = React.useState(false);
+
+    const butuhPemeriksaanFisik =
+        Boolean(klinik?.jenis_klinik) &&
+        KlinikNeedPemeriksaanFisik.includes(klinik.jenis_klinik);
 
     useEffect(() => {
         reset();
@@ -85,8 +74,9 @@ export default function TindakanCreateDokter({
         setData('antrian_id', antrian.id);
         setData('pasien_id', pasien.id);
         setData('klinik_id', klinik.id);
-        setData('pemeriksaan_fisik_id', pemeriksaan_fisik?.id);
         setData('keluhan_utama', antrian.keluhan ?? '');
+        if (butuhPemeriksaanFisik && pemeriksaan_fisik)
+            setData('pemeriksaan_fisik_id', pemeriksaan_fisik.id);
     }, [antrian.id, pasien.id, klinik.id, pemeriksaan_fisik?.id]);
 
     useEffect(() => {
@@ -94,17 +84,29 @@ export default function TindakanCreateDokter({
         setErrors({});
     }, []);
 
+    useEffect(() => {
+        setData('butuh_resep', butuhResep);
+    }, [butuhResep]);
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (processing) return;
         setErrors({});
         setProcessing(true);
 
-        /* validasi hanya bila punya server */
+        if (!data.layanan.some((l) => l.layanan_id !== 0)) {
+            setErrors({ general: 'Pilih minimal 1 layanan untuk pasien.' });
+            toast.error('Pilih minimal 1 layanan untuk pasien.');
+            setProcessing(false);
+            return;
+        }
+
         if (punya_server === 1) {
+            const kosong = (v?: string) => !String(v || '').trim();
             if (
-                !String(data.detail_keluhan || '').trim() ||
-                !String(data.diagnosa || '').trim() ||
-                !String(data.tindakan || '').trim()
+                kosong(data.detail_keluhan) ||
+                kosong(data.diagnosa) ||
+                kosong(data.tindakan)
             ) {
                 setErrors({
                     detail_keluhan: 'Wajib diisi',
@@ -115,18 +117,47 @@ export default function TindakanCreateDokter({
                 setProcessing(false);
                 return;
             }
+        }
 
-            setConfirmOpen(true);
+        if (!butuhResep) {
+            // ➜ Tampilkan alert konfirmasi sebelum simpan tanpa resep
+            setConfirmNoResepOpen(true);
             setProcessing(false);
             return;
         }
 
-        router.visit(`/dokter/antrian/${antrian.id}/resep/create`);
+        // Jika butuh resep → dialog konfirmasi lama
+        setConfirmOpen(true);
+        setProcessing(false);
     };
 
     const confirmAndSend = () => {
+        setConfirmOpen(false);
         setProcessing(true);
         router.visit(`/dokter/antrian/${antrian.id}/resep/create`);
+    };
+
+    const confirmNoResepAndSubmit = () => {
+        setConfirmNoResepOpen(false);
+        setProcessing(true);
+
+        router.post(
+            route('dokter.resep.final-store'),
+            {
+                catatan: data,
+            },
+            {
+                onFinish: () => setProcessing(false),
+                onSuccess: () => {
+                    toast.success('Tindakan berhasil disimpan');
+                    router.visit('/dokter/antrian');
+                },
+                onError: (errs) => {
+                    toast.error('Gagal menyimpan tindakan');
+                    setErrors(errs);
+                },
+            },
+        );
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -143,19 +174,49 @@ export default function TindakanCreateDokter({
                         Buat Tindakan untuk {pasien.nama_lengkap}
                     </h1>
                     <p className="mt-1 text-sm text-gray-500">
-                        Buat tindakan yang akan di lakukan
+                        Buat tindakan yang akan dilakukan
                     </p>
                 </div>
 
                 <div className="space-y-6">
                     <DataPasienTangani pasien={pasien} />
 
-                    <DataPemeriksaanFisik
-                        pemeriksaanFisik={pemeriksaan_fisik}
+                    {butuhPemeriksaanFisik && pemeriksaan_fisik && (
+                        <DataPemeriksaanFisik
+                            pemeriksaanFisik={pemeriksaan_fisik}
+                        />
+                    )}
+
+                    <FormPilihLayanan
+                        layanan_list={layanan ?? []}
+                        onChange={(items) => setData('layanan', items)}
+                        errors={{ general: errors.general }}
                     />
 
+                    {/* Switch butuh resep */}
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-900">
+                                    Resep Obat{' '}
+                                    <span className="text-red-500">*</span>
+                                </h3>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Apakah pasien memerlukan resep obat?
+                                </p>
+                            </div>
+                            <Switch
+                                className="data-[state=checked]:bg-emerald-600"
+                                checked={butuhResep}
+                                onCheckedChange={setButuhResep}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Form catatan */}
                     <FormCreateCatatanLayananDokter
                         punyaServer={punya_server}
+                        butuhResep={butuhResep}
                         data={data}
                         setData={setData}
                         handleSubmit={handleSubmit}
@@ -164,13 +225,14 @@ export default function TindakanCreateDokter({
                     />
                 </div>
 
+                {/* Dialog konfirmasi */}
                 <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>
                                 {punya_server === 0
-                                    ? 'Apakah kamu sudah benar-benar mendata pasien ini?'
-                                    : 'Apakah kamu sudah selesai mendata pasien ini?'}
+                                    ? 'Apakah Anda sudah benar-benar mendata pasien ini?'
+                                    : 'Apakah Anda sudah selesai mendata pasien ini?'}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                                 Pastikan data pasien sudah sesuai sebelum
@@ -184,6 +246,36 @@ export default function TindakanCreateDokter({
                                 onClick={confirmAndSend}
                             >
                                 Ya, lanjut ke resep
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+
+                <AlertDialog
+                    open={confirmNoResepOpen}
+                    onOpenChange={setConfirmNoResepOpen}
+                >
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                Konfirmasi Simpan Tanpa Resep
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Anda memilih untuk{' '}
+                                <strong className="text-red-500">
+                                    tidak membuat resep
+                                </strong>
+                                . Tindakan akan langsung disimpan dan pasien
+                                dianggap selesai. Yakin ingin melanjutkan?
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction
+                                className="bg-emerald-600 hover:bg-emerald-700"
+                                onClick={confirmNoResepAndSubmit}
+                            >
+                                Ya, Simpan Tanpa Resep
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

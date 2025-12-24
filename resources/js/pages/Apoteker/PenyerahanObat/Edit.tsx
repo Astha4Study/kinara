@@ -1,5 +1,5 @@
 import DataPasienResep from '@/components/data-pasien-resep';
-import TablePembayaranResepsionis from '@/components/table-pembayaran-resepsionis';
+import TableObatPenyerahanObatApoteker from '@/components/table-obat-penyerahan-obat-apoteker';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -21,23 +21,18 @@ type Resep = {
     id: number;
     total_harga: number;
     status: string;
-    diagnosa: string;
     pasien: {
         nama_lengkap: string;
         nomor_pasien: string;
-        nik: string;
-        riwayat_penyakit: string;
     };
-    dokter: {
-        nama: string;
-    };
-    detail: {
+    dokter: { nama: string };
+    detail_resep: {
         id: number;
-        nama_obat: string;
+        nama: string;
         jumlah: number;
-        satuan: string;
         harga: number;
         subtotal: number;
+        satuan?: string;
     }[];
 };
 
@@ -74,27 +69,14 @@ export default function PenyerahanObatCreateApoteker({ resep }: Props) {
             <Head title="Proses Penyerahan Obat" />
             <div className="p-6">
                 <div className="space-y-6">
-                    {/* Data Pasien & Dokter */}
-                    <DataPasienResep
-                        pasien={resep.pasien}
-                        dokter={resep.dokter}
-                        diagnosa={resep.diagnosa}
+                    {/* Data Pasien */}
+                    <DataPasienResep pasien={resep.pasien} />
+
+                    <TableObatPenyerahanObatApoteker
+                        detail={resep.detail_resep}
+                        processing={processing}
+                        onConfirm={() => setOpen(true)}
                     />
-
-                    {/* Tabel Detail Obat */}
-                    <TablePembayaranResepsionis detail={resep.detail} />
-
-                    {/* Tombol Aksi */}
-                    <div className="flex justify-end border-t border-gray-200 bg-gray-50 px-6 py-4">
-                        <button
-                            type="button"
-                            disabled={processing}
-                            onClick={() => setOpen(true)}
-                            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
-                        >
-                            Konfirmasi Penyerahan Obat
-                        </button>
-                    </div>
                 </div>
             </div>
 

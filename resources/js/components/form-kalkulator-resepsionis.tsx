@@ -1,11 +1,10 @@
 import { toast } from 'sonner';
 
 type Props = {
-    totalHarga: number;
-    data: {
-        uang_dibayar: number;
-        metode_pembayaran: string;
-    };
+    detailResep: { subtotal: number }[];
+    detailLayanan: { subtotal: number }[];
+    data: { uang_dibayar: number; metode_pembayaran: string };
+
     setData: (key: 'uang_dibayar' | 'metode_pembayaran', value: any) => void;
     onSubmit: () => void;
     processing?: boolean;
@@ -25,12 +24,17 @@ const parseRupiah = (value: string) => {
 };
 
 export default function FormKalkulatorResepsionis({
-    totalHarga,
+    detailResep,
+    detailLayanan,
     data,
     setData,
     onSubmit,
     processing = false,
 }: Props) {
+    const totalHarga =
+        detailResep.reduce((sum, i) => sum + i.subtotal, 0) +
+        detailLayanan.reduce((sum, i) => sum + i.subtotal, 0);
+
     const kembalian = data.uang_dibayar - totalHarga;
 
     const handleSubmit = (e: React.FormEvent) => {

@@ -1,9 +1,19 @@
 import FormEditKlinikAdmin from '@/components/form-edit-klinik-admin';
 import PreviewEditKlinik from '@/components/preview-edit-klinik';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 type Klinik = {
@@ -53,6 +63,30 @@ export default function KlinikEditAdmin({ klinik }: Props) {
         gambar: undefined as File | undefined,
     });
 
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [isDirty, setIsDirty] = useState(false);
+    const isEqual = (a: any, b: any) => JSON.stringify(a) === JSON.stringify(b);
+
+    useEffect(() => {
+        const original = {
+            nama_klinik: klinik.nama_klinik ?? '',
+            jenis_klinik: klinik.jenis_klinik ?? '',
+            alamat: klinik.alamat ?? '',
+            kota: klinik.kota ?? '',
+            provinsi: klinik.provinsi ?? '',
+            no_telepon: klinik.no_telepon ?? '',
+            email: klinik.email ?? '',
+            deskripsi: klinik.deskripsi ?? '',
+            latitude: klinik.latitude ?? '',
+            longitude: klinik.longitude ?? '',
+            kapasitas_total: klinik.kapasitas_total ?? 0,
+            kapasitas_tersedia: klinik.kapasitas_tersedia ?? 0,
+            punya_apoteker: Boolean(klinik.punya_apoteker),
+            punya_server: Boolean(klinik.punya_server),
+        };
+        setIsDirty(!isEqual(data, original));
+    }, [data, klinik]);
+
     const [preview, setPreview] = useState<string | null>(
         klinik.gambar ? `/storage/${klinik.gambar}` : null,
     );
@@ -65,18 +99,15 @@ export default function KlinikEditAdmin({ klinik }: Props) {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
+        if (e) e.preventDefault();
 
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
                 const safeValue = value as unknown;
-                if (safeValue instanceof Blob) {
-                    formData.append(key, safeValue);
-                } else {
-                    formData.append(key, String(safeValue));
-                }
+                if (safeValue instanceof Blob) formData.append(key, safeValue);
+                else formData.append(key, String(safeValue));
             }
         });
 
@@ -86,6 +117,7 @@ export default function KlinikEditAdmin({ klinik }: Props) {
                     description:
                         'Data klinik telah berhasil disimpan ke sistem.',
                 });
+                setAlertOpen(false);
             },
             onError: (err) => {
                 toast.error('Gagal memperbarui klinik', {
@@ -93,8 +125,14 @@ export default function KlinikEditAdmin({ klinik }: Props) {
                         'Terjadi kesalahan saat menyimpan data klinik.',
                 });
                 console.error(err);
+                setAlertOpen(false);
             },
         });
+    };
+
+    const openAlert = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setAlertOpen(true);
     };
 
     return (
@@ -115,7 +153,8 @@ export default function KlinikEditAdmin({ klinik }: Props) {
                         <FormEditKlinikAdmin
                             data={data}
                             setData={setData}
-                            handleSubmit={handleSubmit}
+                            isDirty={isDirty}
+                            handleSubmit={openAlert}
                             handleChangeFile={handleChangeFile}
                             processing={processing}
                             errors={errors}
@@ -127,6 +166,29 @@ export default function KlinikEditAdmin({ klinik }: Props) {
                         <PreviewEditKlinik data={{ ...data, preview }} />
                     </div>
                 </div>
+                <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+                    <AlertDialogContent className="modal-over-map">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                Konfirmasi Perubahan
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Apakah Anda yakin ingin menyimpan perubahan data
+                                klinik ini? Pastikan seluruh informasi yang
+                                dimasukkan sudah benar.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction
+                                className="bg-emerald-600 hover:bg-emerald-700"
+                                onClick={() => handleSubmit()}
+                            >
+                                Simpan
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </AppLayout>
     );

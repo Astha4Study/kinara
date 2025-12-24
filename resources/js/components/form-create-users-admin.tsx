@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 
-interface FormCreateUserProps {
+interface FormCreateUsersAdminProps {
     data: any;
     setData: (key: string, value: any) => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -9,7 +9,7 @@ interface FormCreateUserProps {
     availableRoles: string[];
 }
 
-const FormCreateUser: React.FC<FormCreateUserProps> = ({
+const FormCreateUsersAdmin: React.FC<FormCreateUsersAdminProps> = ({
     data,
     setData,
     handleSubmit,
@@ -124,4 +124,4 @@ const FormCreateUser: React.FC<FormCreateUserProps> = ({
     );
 };
 
-export default FormCreateUser;
+export default FormCreateUsersAdmin;

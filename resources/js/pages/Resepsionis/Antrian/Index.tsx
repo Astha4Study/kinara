@@ -1,3 +1,15 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -37,6 +49,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function AntrianIndexResepsionis() {
     const { antrian } = usePage<PageProps>().props;
     const [searchQuery, setSearchQuery] = useState('');
+    const [open, setOpen] = useState(false);
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [alasan, setAlasan] = useState('');
 
     const filteredAntrian = antrian.filter(
         (a) =>
@@ -45,8 +60,33 @@ export default function AntrianIndexResepsionis() {
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase()) ||
                 a.keluhan.toLowerCase().includes(searchQuery.toLowerCase())) &&
-            a.status.toLowerCase() !== 'selesai',
+            !['selesai', 'dibatalkan'].includes(a.status.toLowerCase()),
     );
+
+    const batalkanClick = (id: number) => {
+        setSelectedId(id);
+        setAlasan('');
+        setOpen(true);
+    };
+
+    const konfirmasiBatalkan = () => {
+        if (!selectedId || !alasan.trim()) {
+            toast.error('Alasan pembatalan wajib diisi');
+            return;
+        }
+
+        router.put(
+            `/resepsionis/antrian/${selectedId}`,
+            { alasan: alasan.trim() },
+            {
+                onSuccess: () => {
+                    toast.success('Antrian berhasil dibatalkan');
+                    setOpen(false);
+                },
+                onError: () => toast.error('Gagal membatalkan antrian'),
+            },
+        );
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -114,9 +154,12 @@ export default function AntrianIndexResepsionis() {
                                                         'Menunggu'
                                                             ? 'bg-yellow-100 text-yellow-700'
                                                             : item.status ===
-                                                                'Diproses'
+                                                                'Sedang Diperiksa'
                                                               ? 'bg-blue-100 text-blue-700'
-                                                              : 'bg-green-100 text-green-700'
+                                                              : item.status ===
+                                                                  'Dibatalkan'
+                                                                ? 'bg-red-100 text-red-700'
+                                                                : 'bg-green-100 text-green-700'
                                                     }`}
                                                 >
                                                     {item.status}
@@ -138,29 +181,9 @@ export default function AntrianIndexResepsionis() {
                                             </td>
                                             <td className="px-6 py-4 text-gray-700">
                                                 <button
-                                                    onClick={() => {
-                                                        if (
-                                                            confirm(
-                                                                'Yakin membatalkan antrian ini?',
-                                                            )
-                                                        ) {
-                                                            router.prefetch(
-                                                                `/resepsionis/antrian/${item.id}`,
-                                                                {
-                                                                    onSuccess:
-                                                                        () =>
-                                                                            toast.success(
-                                                                                'Antrian dibatalkan',
-                                                                            ),
-                                                                    onError:
-                                                                        () =>
-                                                                            toast.error(
-                                                                                'Gagal membatalkan',
-                                                                            ),
-                                                                },
-                                                            );
-                                                        }
-                                                    }}
+                                                    onClick={() =>
+                                                        batalkanClick(item.id)
+                                                    }
                                                     className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700"
                                                 >
                                                     Batalkan
@@ -191,6 +214,40 @@ export default function AntrianIndexResepsionis() {
                     </p>
                 </div>
             </div>
+            <AlertDialog open={open} onOpenChange={setOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Batalkan Antrian</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Masukkan alasan pembatalan antrian ini.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <div>
+                        <Label htmlFor="alasan">
+                            Alasan <span className="text-red-500">*</span>
+                        </Label>
+                        <Textarea
+                            id="alasan"
+                            value={alasan}
+                            onChange={(e) => setAlasan(e.target.value)}
+                            placeholder="Contoh: Pasien membatalkan janji"
+                            rows={3}
+                            className="mt-1 w-full"
+                        />
+                    </div>
+
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-emerald-600 hover:bg-emerald-700"
+                            onClick={konfirmasiBatalkan}
+                        >
+                            Ya, Batalkan
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

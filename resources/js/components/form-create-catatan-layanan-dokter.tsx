@@ -10,6 +10,7 @@ type Data = {
 
 interface Props {
     punyaServer: number;
+    butuhResep: boolean;
     data: Data;
     setData: (k: keyof Data, v: any) => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -17,19 +18,18 @@ interface Props {
     errors: Record<string, string>;
 }
 
-const FormCreateCatatanLayananDokter = ({
+export default function FormCreateCatatanLayananDokter({
     punyaServer,
+    butuhResep,
     data,
     setData,
     handleSubmit,
     processing,
     errors,
-}: Props) => {
+}: Props) {
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        setData(e.target.name as keyof Data, e.target.value);
-    };
+    ) => setData(e.target.name as keyof Data, e.target.value);
 
     return (
         <form
@@ -37,7 +37,7 @@ const FormCreateCatatanLayananDokter = ({
             className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
         >
             <div className="space-y-4 p-6">
-                {/* Keluhan Utama (Read Only) */}
+                {/* Keluhan Utama (read-only) */}
                 <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
                         Keluhan Utama
@@ -45,7 +45,7 @@ const FormCreateCatatanLayananDokter = ({
                     <textarea
                         readOnly
                         rows={3}
-                        value={data.keluhan_utama}
+                        value={data.keluhan_utama || '-'}
                         className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm"
                     />
                 </div>
@@ -165,6 +165,7 @@ const FormCreateCatatanLayananDokter = ({
                 )}
             </div>
 
+            {/* Footer */}
             <div className="flex justify-end gap-3 border-t bg-gray-50 px-6 py-4">
                 <Link
                     href="/dokter/antrian"
@@ -177,11 +178,13 @@ const FormCreateCatatanLayananDokter = ({
                     disabled={processing}
                     className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
                 >
-                    {processing ? 'Membuatkan Resep...' : 'Siapkan Resep'}
+                    {processing
+                        ? 'Menyimpan...'
+                        : butuhResep
+                          ? 'Siapkan Resep'
+                          : 'Simpan Tindakan'}
                 </button>
             </div>
         </form>
     );
-};
-
-export default FormCreateCatatanLayananDokter;
+}
