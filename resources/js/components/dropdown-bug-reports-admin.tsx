@@ -15,28 +15,46 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Link, router } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Trash } from 'lucide-react';
+import { Eye, MoreHorizontal, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
     id: number;
-    name: string;
-    onDelete: () => void;
+    judul: string;
 }
 
-export default function DropdownAdminSuperAdmin({ id, name, onDelete }: Props) {
+const DropdownBugReportsAdmin = ({ id, judul }: Props) => {
     const [openAlert, setOpenAlert] = useState(false);
 
-    const handleDelete = () => {
-        router.delete(`/super-admin/kelola-admin/${id}`);
-        onDelete();
+    const handleCancel = () => {
+        router.put(
+            `/admin/bug-reports/${id}`,
+            {
+                status: 'dibatalkan',
+            },
+            {
+                onSuccess: () => {
+                    toast.success('Laporan dibatalkan', {
+                        description: `Bug "${judul}" berhasil dibatalkan.`,
+                    });
+                    setOpenAlert(false);
+                },
+                onError: () => {
+                    toast.error('Gagal membatalkan laporan', {
+                        description:
+                            'Terjadi kesalahan saat memproses permintaan.',
+                    });
+                },
+            },
+        );
     };
 
     return (
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <button className="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-600 hover:bg-gray-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <button className="flex h-8 w-8 items-center justify-center rounded-md text-gray-600 hover:bg-gray-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         <MoreHorizontal className="h-4 w-4" />
                     </button>
                 </DropdownMenuTrigger>
@@ -45,58 +63,54 @@ export default function DropdownAdminSuperAdmin({ id, name, onDelete }: Props) {
                     align="end"
                     className="w-44 border border-gray-200 bg-white shadow-lg"
                 >
-                    {/* Lihat Detail */}
+                    {/* Show */}
                     <DropdownMenuItem asChild>
                         <Link
-                            href={`/super-admin/kelola-admin/${id}`}
+                            href={`/admin/bug-reports/${id}`}
                             className="flex items-center gap-3 text-blue-600 hover:bg-blue-50"
                         >
-                            <Eye className="h-4 w-4 text-blue-500" /> Lihat
-                            Detail
+                            <Eye className="h-4 w-4 text-blue-500" />
+                            Lihat Detail
                         </Link>
                     </DropdownMenuItem>
 
-                    {/* Edit */}
-                    <DropdownMenuItem asChild>
-                        <Link
-                            href={`/super-admin/kelola-admin/${id}/edit`}
-                            className="flex items-center gap-3 text-emerald-600 hover:bg-emerald-50"
-                        >
-                            <Edit className="h-4 w-4 text-emerald-500" /> Edit
-                        </Link>
-                    </DropdownMenuItem>
-
-                    {/* Hapus */}
+                    {/* Batalkan */}
                     <DropdownMenuItem
                         onClick={() => setOpenAlert(true)}
                         className="flex cursor-pointer items-center gap-3 text-red-600 hover:bg-red-50"
                     >
-                        <Trash className="h-4 w-4 text-red-500" /> Hapus
+                        <XCircle className="h-4 w-4 text-red-500" />
+                        Batalkan
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Alert */}
+            {/* Alert Dialog */}
             <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                        <AlertDialogTitle>
+                            Konfirmasi Pembatalan
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Apakah kamu yakin ingin menghapus admin{' '}
-                            <b>{name}</b>? Tindakan ini tidak bisa dibatalkan.
+                            Apakah Anda yakin ingin membatalkan laporan bug{' '}
+                            <b>{judul}</b>? Tindakan ini tidak dapat dibatalkan.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
+
                     <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={handleCancel}
                             className="bg-red-600 text-white hover:bg-red-700"
                         >
-                            Ya, Hapus
+                            Ya, Batalkan
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         </>
     );
-}
+};
+
+export default DropdownBugReportsAdmin;
