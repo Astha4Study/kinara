@@ -1,6 +1,10 @@
+import CtaSection from '@/components/landing-page/cta-section';
+import ForClinicSection from '@/components/landing-page/for-clinic-section';
+import HeroSection from '@/components/landing-page/hero-section';
+import HowItWorksSection from '@/components/landing-page/how-it-works-section';
+import NearLocationSection from '@/components/landing-page/near-location-section';
+import WhyChooseUsSection from '@/components/landing-page/why-choose-us-section';
 import LandingLayout from '@/layouts/landing-layout';
-import HeroSection from '@/components/landing-page/hero';
-import NearLocation from '@/components/landing-page/near-location';
 
 type Klinik = {
     id: number;
@@ -29,7 +33,11 @@ export default function LandingIndexPage({ kliniks }: PageProps) {
     return (
         <LandingLayout>
             <HeroSection />
-            <NearLocation kliniks={kliniks} />
+            <NearLocationSection kliniks={kliniks} />
+            <WhyChooseUsSection />
+            <HowItWorksSection />
+            <ForClinicSection />
+            <CtaSection />
         </LandingLayout>
     );
 }

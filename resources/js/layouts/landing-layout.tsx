@@ -1,3 +1,4 @@
+import Footer from '@/components/footer';
 import Navbar from '@/components/navbar';
 
 type Props = {
@@ -9,6 +10,7 @@ export default function LandingLayout({ children }: Props) {
         <div className="flex min-h-screen flex-col bg-white">
             <Navbar />
             {children}
+            <Footer />
         </div>
     );
 }

@@ -12,7 +12,7 @@ use App\Http\Controllers\ApotekerPenyerahanObatController;
 use App\Http\Controllers\ApotekerResepController;
 use App\Http\Controllers\ApotekerResepDetailController;
 use App\Http\Controllers\ApotekerResepMasukController;
-use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CariKlinikPageController;
 use App\Http\Controllers\ClientKlinikController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DokterAntrianController;
@@ -23,6 +23,8 @@ use App\Http\Controllers\DokterKlinikController;
 use App\Http\Controllers\DokterPasienController;
 use App\Http\Controllers\DokterResepController;
 use App\Http\Controllers\DokterTanganiController;
+use App\Http\Controllers\KontakKamiPageController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\ResepsionisAntrianController;
 use App\Http\Controllers\ResepsionisKlinikController;
 use App\Http\Controllers\ResepsionisPasienController;
@@ -32,9 +34,16 @@ use App\Http\Controllers\SuperAdminAddAdminController;
 use App\Http\Controllers\SuperAdminBugReportsController;
 use App\Http\Controllers\SuperAdminKlinikController;
 use App\Http\Controllers\SuperAdminPasienController;
+use App\Http\Controllers\TentangKamiPageController;
+use App\Http\Controllers\UntukKlinikController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [ClientController::class, 'index'])->name('home');
+Route::get('/', [LandingPageController::class, 'index'])->name('home');
+Route::get('/cari-klinik', [CariKlinikPageController::class, 'index']);
+Route::get('/untuk-klinik', [UntukKlinikController::class, 'index']);
+Route::get('/tentang-kami', [TentangKamiPageController::class, 'index']);
+Route::get('/kontak-kami', [KontakKamiPageController::class, 'index']);
+
 Route::get('/klinik/{slug}', [ClientKlinikController::class, 'show'])
     ->name('klinik.detail');
 
