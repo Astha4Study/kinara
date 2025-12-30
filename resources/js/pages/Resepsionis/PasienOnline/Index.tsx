@@ -2,7 +2,6 @@ import DropdownPasienOnline from '@/components/dropdown-menu-pasien-online';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Filter, Search } from 'lucide-react';
 import { useState } from 'react';
 
 type PasienOnline = {
@@ -112,29 +111,9 @@ export default function PasienOnlineIndexResepsionis() {
                     <h1 className="text-2xl font-semibold text-gray-900">
                         Pasien Online
                     </h1>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 mb-4 text-sm text-gray-500">
                         Daftar pasien online yang menunggu persetujuan
                     </p>
-                </div>
-
-                {/* Action Bar */}
-                <div className="my-4 flex items-center justify-between">
-                    <div className="relative flex gap-3">
-                        <div className="flex">
-                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Cari pasien online berdasarkan nama atau NIK..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full min-w-[400px] rounded-lg border border-gray-200 bg-white py-2.5 pr-4 pl-10 text-sm focus:border-emerald-400 focus:ring-emerald-400"
-                            />
-                        </div>
-                        <button className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <Filter className="h-4 w-4" />
-                            Filter
-                        </button>
-                    </div>
                 </div>
 
                 {/* Table */}

@@ -149,7 +149,10 @@ export default function UsersEditAdmin({ user, availableRoles }: Props) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction onClick={realSubmit}>
+                        <AlertDialogAction
+                            onClick={realSubmit}
+                            className="bg-emerald-600 transition-all hover:bg-emerald-700"
+                        >
                             Simpan
                         </AlertDialogAction>
                     </AlertDialogFooter>

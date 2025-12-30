@@ -17,14 +17,14 @@ class SuperAdminAddAdminController extends Controller
     {
         $user = Auth::user();
 
-        if (! $user->hasRole('super_admin')) {
+        if (!$user->hasRole('super_admin')) {
             abort(403, 'Akses ditolak.');
         }
 
         $admins = User::role('admin')->get();
 
         return Inertia::render('SuperAdmin/Admins/Index', [
-            'admins' => $admins->map(fn ($a) => [
+            'admins' => $admins->map(fn($a) => [
                 'id' => $a->id,
                 'name' => $a->name,
                 'email' => $a->email,
@@ -38,7 +38,7 @@ class SuperAdminAddAdminController extends Controller
      */
     public function create()
     {
-        if (! Auth::user()->hasRole('super_admin')) {
+        if (!Auth::user()->hasRole('super_admin')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -52,7 +52,7 @@ class SuperAdminAddAdminController extends Controller
     {
         $user = Auth::user();
 
-        if (! $user->hasRole('super_admin')) {
+        if (!$user->hasRole('super_admin')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -81,11 +81,11 @@ class SuperAdminAddAdminController extends Controller
     {
         $admin = User::findOrFail($id);
 
-        if (! Auth::user()->hasRole('super_admin')) {
+        if (!Auth::user()->hasRole('super_admin')) {
             abort(403, 'Akses ditolak.');
         }
 
-        if (! $admin->hasRole('admin')) {
+        if (!$admin->hasRole('admin')) {
             abort(403, 'Data bukan admin.');
         }
 
@@ -106,16 +106,17 @@ class SuperAdminAddAdminController extends Controller
     {
         $admin = User::findOrFail($id);
 
-        if (! Auth::user()->hasRole('super_admin')) {
+        if (!Auth::user()->hasRole('super_admin')) {
             abort(403, 'Akses ditolak.');
         }
 
-        if (! $admin->hasRole('admin')) {
+        if (!$admin->hasRole('admin')) {
             abort(403, 'Hanya admin yang bisa diedit.');
         }
 
         return Inertia::render('SuperAdmin/Admins/Edit', [
             'admin' => $admin,
+            'availableRoles' => ['admin'],
         ]);
     }
 
@@ -126,25 +127,26 @@ class SuperAdminAddAdminController extends Controller
     {
         $admin = User::findOrFail($id);
 
-        if (! Auth::user()->hasRole('super_admin')) {
+        if (!Auth::user()->hasRole('super_admin')) {
             abort(403, 'Akses ditolak.');
         }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$id,
-            'password' => 'nullable|string|min:8',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'new_password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $admin->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => $validated['password']
-                ? Hash::make($validated['password'])
+            'password' => $validated['new_password']
+                ? Hash::make($validated['new_password'])
                 : $admin->password,
         ]);
 
-        return redirect()->route('super_admin.kelola-admin.index')->with('success', 'Admin berhasil diperbarui.');
+        return redirect()->route('super_admin.kelola-admin.index')
+            ->with('success', 'Admin berhasil diperbarui.');
     }
 
     /**
@@ -154,11 +156,11 @@ class SuperAdminAddAdminController extends Controller
     {
         $admin = User::findOrFail($id);
 
-        if (! Auth::user()->hasRole('super_admin')) {
+        if (!Auth::user()->hasRole('super_admin')) {
             abort(403, 'Akses ditolak.');
         }
 
-        if (! $admin->hasRole('admin')) {
+        if (!$admin->hasRole('admin')) {
             abort(403, 'Hanya admin yang bisa dihapus.');
         }
 

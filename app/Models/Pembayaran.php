@@ -20,6 +20,11 @@ class Pembayaran extends Model
         'status',
     ];
 
+    public function pasien()
+    {
+        return $this->belongsTo(Pasien::class);
+    }
+
     public function resep()
     {
         return $this->belongsTo(Resep::class);

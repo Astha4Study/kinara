@@ -28,12 +28,12 @@ export default function ProfileIndexPage() {
                         Account Settings
                     </h1>
 
-                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
+                    <div className="grid grid-cols-1 gap-3 lg:grid-cols-[260px_1fr]">
                         {/* SIDEBAR */}
                         <SidebarProfile />
 
                         {/* MAIN CONTENT */}
-                        <main className="space-y-6">
+                        <main className="space-y-3">
                             {/* PROFILE CARD */}
                             <div className="rounded-xl border bg-white p-6 shadow-sm">
                                 <div className="flex items-center justify-between">
@@ -76,10 +76,6 @@ export default function ProfileIndexPage() {
                                     <h3 className="text-base font-semibold text-gray-900">
                                         Personal Information
                                     </h3>
-                                    <button className="inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50">
-                                        <Pencil className="h-4 w-4" />
-                                        Edit
-                                    </button>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

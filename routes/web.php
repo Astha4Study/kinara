@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminAddResepsionisAndApotekerAndDoktorController;
 use App\Http\Controllers\AdminBugReportsController;
 use App\Http\Controllers\AdminKlinikController;
+use App\Http\Controllers\AdminLaporanKeuanganController;
 use App\Http\Controllers\AdminLayananController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminPengaturanKlinikController;
@@ -101,6 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('pengaturan.update');
             Route::resource('bug-reports', AdminBugReportsController::class)
                 ->only(['index', 'create', 'store', 'show', 'update']);
+            Route::resource('laporan-keuangan', AdminLaporanKeuanganController::class)
+                ->only('index', 'show');
         });
 
     Route::middleware(['auth', 'role:resepsionis'])
@@ -188,5 +191,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

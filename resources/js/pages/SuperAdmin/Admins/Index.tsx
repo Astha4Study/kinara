@@ -13,7 +13,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import { Inertia } from '@inertiajs/inertia';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Filter, Plus, Search, Trash2, X } from 'lucide-react';
+import { Plus, Search, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -149,10 +149,6 @@ export default function AdminsIndexSuperAdmin() {
                                 className="w-full min-w-[400px] rounded-lg border border-gray-200 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 transition focus:border-emerald-400 focus:ring-emerald-400"
                             />
                         </div>
-                        <button className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
-                            <Filter className="h-4 w-4" />
-                            Filter
-                        </button>
                     </div>
 
                     <Link

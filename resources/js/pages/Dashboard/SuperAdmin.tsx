@@ -98,9 +98,7 @@ export default function SuperAdminDashboard({
         const naik = value >= 0;
         return (
             <div
-                className={`flex items-center gap-1 text-xs font-medium ${
-                    naik ? 'text-emerald-600' : 'text-rose-500'
-                }`}
+                className={`flex items-center gap-1 text-xs font-medium ${naik ? 'text-emerald-600' : 'text-rose-500'}`}
             >
                 {naik ? (
                     <ChartColumnIncreasing className="h-4 w-4" />
@@ -237,29 +235,35 @@ export default function SuperAdminDashboard({
                                     </thead>
 
                                     <tbody className="divide-y divide-gray-100">
-                                        {aktivitas.slice(0, 10).map((item, i) => (
-                                            <tr
-                                                key={i}
-                                                className="transition-colors hover:bg-gray-50"
-                                            >
-                                                <td className="px-2 py-2 text-center font-bold text-emerald-700 md:px-3">
-                                                    {i + 1}
-                                                </td>
-                                                <td className="px-2 py-2 md:px-3">
-                                                    <span className="block truncate font-medium text-gray-900">
-                                                        {item.deskripsi}
-                                                    </span>
-                                                </td>
-                                                <td className="px-2 py-2 text-right md:px-3">
-                                                    <div className="inline-flex items-center gap-1 text-[10px] text-gray-600 md:text-xs">
-                                                        <Clock className="h-3.5 w-3.5 shrink-0" />
-                                                        <span className="whitespace-nowrap">
-                                                            {new Date(item.waktu).toLocaleString('id-ID')}
+                                        {aktivitas
+                                            .slice(0, 10)
+                                            .map((item, i) => (
+                                                <tr
+                                                    key={i}
+                                                    className="transition-colors hover:bg-gray-50"
+                                                >
+                                                    <td className="px-2 py-2 text-center font-bold text-emerald-700 md:px-3">
+                                                        {i + 1}
+                                                    </td>
+                                                    <td className="px-2 py-2 md:px-3">
+                                                        <span className="block truncate font-medium text-gray-900">
+                                                            {item.deskripsi}
                                                         </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td className="px-2 py-2 text-right md:px-3">
+                                                        <div className="inline-flex items-center gap-1 text-[10px] text-gray-600 md:text-xs">
+                                                            <Clock className="h-3.5 w-3.5 shrink-0" />
+                                                            <span className="whitespace-nowrap">
+                                                                {new Date(
+                                                                    item.waktu,
+                                                                ).toLocaleString(
+                                                                    'id-ID',
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
                                     </tbody>
                                 </table>
                             ) : (
@@ -270,7 +274,8 @@ export default function SuperAdminDashboard({
                                             Belum ada aktivitas sistem
                                         </p>
                                         <p className="mt-1 text-xs text-gray-500">
-                                            Aktivitas terbaru akan muncul di sini
+                                            Aktivitas terbaru akan muncul di
+                                            sini
                                         </p>
                                     </div>
                                 </div>
@@ -295,13 +300,27 @@ export default function SuperAdminDashboard({
                             <table className="w-full text-xs md:text-sm">
                                 <thead className="bg-gray-50 text-gray-600">
                                     <tr>
-                                        <th className="px-3 py-2 text-center font-medium">No</th>
-                                        <th className="px-3 py-2 text-left font-medium min-w-[150px]">Judul</th>
-                                        <th className="px-3 py-2 text-left font-medium min-w-[120px]">Klinik</th>
-                                        <th className="px-3 py-2 text-left font-medium">Pelapor</th>
-                                        <th className="px-3 py-2 text-center font-medium">Status</th>
-                                        <th className="px-3 py-2 text-center font-medium">Dampak</th>
-                                        <th className="px-3 py-2 text-right font-medium min-w-[140px]">Dilaporkan</th>
+                                        <th className="px-3 py-2 text-center font-medium">
+                                            No
+                                        </th>
+                                        <th className="min-w-[150px] px-3 py-2 text-left font-medium">
+                                            Judul
+                                        </th>
+                                        <th className="min-w-[120px] px-3 py-2 text-left font-medium">
+                                            Klinik
+                                        </th>
+                                        <th className="px-3 py-2 text-left font-medium">
+                                            Pelapor
+                                        </th>
+                                        <th className="px-3 py-2 text-center font-medium">
+                                            Status
+                                        </th>
+                                        <th className="px-3 py-2 text-center font-medium">
+                                            Dampak
+                                        </th>
+                                        <th className="min-w-[140px] px-3 py-2 text-right font-medium">
+                                            Dilaporkan
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
@@ -340,8 +359,10 @@ export default function SuperAdminDashboard({
                                                     {bug.dampak_pelapor}
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-2 text-right text-gray-600 whitespace-nowrap">
-                                                {new Date(bug.created_at).toLocaleString('id-ID')}
+                                            <td className="px-3 py-2 text-right whitespace-nowrap text-gray-600">
+                                                {new Date(
+                                                    bug.created_at,
+                                                ).toLocaleString('id-ID')}
                                             </td>
                                         </tr>
                                     ))}

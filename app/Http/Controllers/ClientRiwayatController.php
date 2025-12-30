@@ -19,7 +19,7 @@ class ClientRiwayatController extends Controller
         $riwayat = PasienOnline::where('user_id', $user->id)
             ->latest()
             ->get()
-            ->map(fn ($r) => [
+            ->map(fn($r) => [
                 'id' => $r->id,
                 'tanggal' => $r->created_at->format('d-m-Y H:i'),
                 'status' => $r->status,
@@ -27,7 +27,7 @@ class ClientRiwayatController extends Controller
                 'nomor_pendaftaran' => $r->nomor_pendaftaran,
             ]);
 
-        return Inertia::render('(client)/Riwayat/Index', [
+        return Inertia::render('(client)/Profile/Riwayat', [
             'riwayat' => $riwayat,
         ]);
     }

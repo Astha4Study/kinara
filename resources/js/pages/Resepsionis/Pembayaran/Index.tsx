@@ -86,13 +86,13 @@ export default function PembayaranIndexResepsionis() {
                 {/* Table */}
                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full min-w-full table-fixed text-sm">
                             <thead>
                                 <tr className="border-b border-gray-200 bg-gray-50">
                                     {listTable.map((item) => (
                                         <th
                                             key={item}
-                                            className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
+                                            className="px-6 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500 uppercase"
                                         >
                                             {item}
                                         </th>
@@ -159,9 +159,7 @@ export default function PembayaranIndexResepsionis() {
                                                     >
                                                         Proses Bayar
                                                     </Link>
-                                                ) : (
-                                                    <></>
-                                                )}
+                                                ) : null}
                                             </td>
                                         </tr>
                                     ))

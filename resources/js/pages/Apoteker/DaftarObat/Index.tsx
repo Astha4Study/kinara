@@ -1,9 +1,20 @@
 import DropdownObatApoteker from '@/components/dropdown-menu-obat-apoteker';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Filter, Plus, Search, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 type DaftarObat = {
     id: number;
@@ -31,6 +42,7 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Daftar Obat', href: '' }];
 export default function DaftarObatIndexApoteker() {
     const { obat } = usePage<PageProps>().props;
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [openAlert, setOpenAlert] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     const toggleSelect = (id: number) =>
@@ -43,14 +55,26 @@ export default function DaftarObatIndexApoteker() {
         else setSelectedIds(obat.map((o) => o.id));
     };
 
-    const deleteSelected = () => {
-        if (selectedIds.length === 0) return;
-        if (!confirm(`Yakin ingin menghapus ${selectedIds.length} obat?`))
-            return;
+    const handleDeleteSelected = () => {
         selectedIds.forEach((id) =>
-            router.delete(`/apoteker/daftar-obat/${id}`),
+            router.delete(`/apoteker/daftar-obat/${id}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Berhasil menghapus obat', {
+                        description: `${selectedIds.length} obat berhasil dihapus.`,
+                    });
+                },
+                onError: () => {
+                    toast.error('Gagal menghapus obat', {
+                        description:
+                            'Terjadi kesalahan saat menghapus data obat.',
+                    });
+                },
+            }),
         );
+
         setSelectedIds([]);
+        setOpenAlert(false);
     };
 
     const filteredDaftarObat = obat.filter((o) =>
@@ -207,11 +231,12 @@ export default function DaftarObatIndexApoteker() {
                             {selectedIds.length} obat dipilih
                         </span>
                         <button
-                            onClick={deleteSelected}
+                            onClick={() => setOpenAlert(true)}
                             className="flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
                         >
                             <Trash2 className="h-4 w-4" /> Hapus
                         </button>
+
                         <button
                             onClick={() => setSelectedIds([])}
                             className="ml-2 text-gray-400 transition hover:text-gray-600"
@@ -221,6 +246,29 @@ export default function DaftarObatIndexApoteker() {
                     </div>
                 )}
             </div>
+
+            <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Apakah kamu yakin ingin menghapus{' '}
+                            <b>{selectedIds.length}</b> obat yang dipilih?
+                            <br />
+                            Tindakan ini tidak bisa dibatalkan.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeleteSelected}
+                            className="bg-red-600 text-white hover:bg-red-700"
+                        >
+                            Ya, Hapus
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

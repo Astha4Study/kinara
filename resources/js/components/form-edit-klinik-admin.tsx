@@ -364,7 +364,7 @@ const FormEditKlinikAdmin: React.FC<FormEditKlinikAdminProps> = ({
                             type="file"
                             accept="image/*"
                             onChange={handleChangeFile}
-                            className="block w-full rounded-lg border border-gray-200 text-sm text-gray-700 file:rounded-lg file:bg-emerald-50 file:px-4 file:py-2 file:text-emerald-700"
+                            className="block w-full cursor-pointer rounded-lg border border-gray-200 text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-emerald-700 hover:file:bg-emerald-100"
                         />
                     </div>
                 </div>

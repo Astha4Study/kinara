@@ -17,6 +17,7 @@ import {
 import { Link, router } from '@inertiajs/react';
 import { Edit, Eye, MoreHorizontal, Trash } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
     id: number;
@@ -27,7 +28,19 @@ export default function DropdownObatApoteker({ id, namaObat }: Props) {
     const [openAlert, setOpenAlert] = useState(false);
 
     const handleDelete = () => {
-        router.delete(`/apoteker/daftar-obat/${id}`);
+        router.delete(`/apoteker/daftar-obat/${id}`, {
+            onSuccess: () => {
+                toast.success(`Obat ${namaObat} berhasil dihapus`, {
+                    description: 'Data obat sudah dihapus dari sistem.',
+                });
+                setOpenAlert(false);
+            },
+            onError: () => {
+                toast.error(`Gagal menghapus obat ${namaObat}`, {
+                    description: 'Terjadi kesalahan saat menghapus data.',
+                });
+            },
+        });
     };
 
     return (

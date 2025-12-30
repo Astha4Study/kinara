@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(FasilitasSeeder::class);
 
+
         $superAdmin = User::firstOrCreate(
             ['email' => 'superadmin@example.com'],
             [
@@ -28,5 +29,6 @@ class DatabaseSeeder extends Seeder
 
         $superAdmin->assignRole('super_admin');
 
+        $this->call(AdminSeeder::class);
     }
 }

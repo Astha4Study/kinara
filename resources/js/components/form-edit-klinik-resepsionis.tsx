@@ -163,12 +163,14 @@ const FormEditKlinik: React.FC<FormEditKlinikProps> = ({
                     <input
                         type="number"
                         value={data.kapasitas_tersedia}
-                        onChange={(e) =>
-                            setData(
-                                'kapasitas_tersedia',
-                                Number(e.target.value) || 0,
-                            )
-                        }
+                        onChange={(e) => {
+                            const value = Number(e.target.value) || 0;
+                            const limitedValue = Math.min(
+                                value,
+                                data.kapasitas_total,
+                            );
+                            setData('kapasitas_tersedia', limitedValue);
+                        }}
                         className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm"
                     />
                 </div>

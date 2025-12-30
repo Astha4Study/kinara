@@ -23,7 +23,7 @@ type Catatan = {
     tindakan: string;
     catatan_lain: string;
     dokter_nama: string;
-    punyaServer: number;
+    punya_server: number;
     detail_layanan: {
         id: number;
         layanan: string;
@@ -132,7 +132,7 @@ export default function CatatanLayananShowDokter({ catatan }: Props) {
                             pasien
                         </p>
 
-                        {catatan.punyaServer === 1 ? (
+                        {catatan.punya_server === 1 ? (
                             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <Highlight
                                     label="Keluhan Utama"
@@ -178,8 +178,7 @@ export default function CatatanLayananShowDokter({ catatan }: Props) {
                                                         idx: number,
                                                     ) => (
                                                         <li key={idx}>
-                                                            {layanan.layanan}{' '}
-                                                            (Qty: {layanan.qty})
+                                                            {layanan.layanan}
                                                         </li>
                                                     ),
                                                 )}

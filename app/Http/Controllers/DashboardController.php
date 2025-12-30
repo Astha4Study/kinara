@@ -63,7 +63,7 @@ class DashboardController extends Controller
 
     private function renderAdminDashboard($user, $klinik)
     {
-        if (! $klinik || ! $klinik->id) {
+        if (!$klinik || !$klinik->id) {
             return Inertia::render('Dashboard/Admin', [
                 'klinik' => null,
                 'user' => $user->only('id', 'name'),
@@ -99,8 +99,8 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Admin', [
             'klinik' => $klinik
-                ?->setAttribute('gambar', asset('storage/'.$klinik->gambar))
-                ?->setAttribute('jenis_klinik', $klinik->jenis_klinik),
+                    ?->setAttribute('gambar', asset('storage/' . $klinik->gambar))
+                    ?->setAttribute('jenis_klinik', $klinik->jenis_klinik),
             'user' => $user->only('id', 'name'),
             'kpi' => $kpiAdmin,
             'trendPendapatan' => $trendPendapatan,
@@ -126,7 +126,7 @@ class DashboardController extends Controller
                 'nama_klinik' => $klinikDokter->nama_klinik,
                 'jenis_klinik' => $klinikDokter->jenis_klinik,
                 'gambar' => $klinikDokter->gambar
-                    ? asset('storage/'.$klinikDokter->gambar)
+                    ? asset('storage/' . $klinikDokter->gambar)
                     : null,
             ] : null,
             'antrian' => $antrian,
@@ -143,8 +143,8 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Resepsionis', [
             'klinik' => $klinik
-                ?->setAttribute('gambar', asset('storage/'.$user->klinik->gambar))
-                ?->setAttribute('jenis_klinik', $user->klinik->jenis_klinik),
+                    ?->setAttribute('gambar', asset('storage/' . $user->klinik->gambar))
+                    ?->setAttribute('jenis_klinik', $user->klinik->jenis_klinik),
             'user' => $user->only('id', 'name'),
             'reseps' => $reseps,
             'pasienBaru' => $pasienBaru,
@@ -161,8 +161,8 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Apoteker', [
             'klinik' => $klinik
-                ?->setAttribute('gambar', asset('storage/'.$user->klinik->gambar))
-                ?->setAttribute('jenis_klinik', $user->klinik->jenis_klinik),
+                    ?->setAttribute('gambar', asset('storage/' . $user->klinik->gambar))
+                    ?->setAttribute('jenis_klinik', $user->klinik->jenis_klinik),
             'user' => $user->only('id', 'name'),
             'resepMasuk' => $resepMasuk,
             'chartResepSelesai' => $chartResepSelesai,
@@ -179,7 +179,7 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'asc')
             ->limit(5)
             ->get()
-            ->map(fn ($p) => [
+            ->map(fn($p) => [
                 'id' => $p->id,
                 'nama_pasien' => $p->resep?->pasien?->nama_lengkap
                     ?? $p->catatanLayanan?->pasien?->nama_lengkap
@@ -196,7 +196,7 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get()
-            ->map(fn ($p) => [
+            ->map(fn($p) => [
                 'id' => $p->id,
                 'nama_lengkap' => $p->nama_lengkap,
                 'nomor_pasien' => $p->nomor_pasien,
@@ -206,7 +206,7 @@ class DashboardController extends Controller
 
     private function getAntrianDokter($dokter)
     {
-        if (! $dokter) {
+        if (!$dokter) {
             return collect();
         }
 
@@ -216,7 +216,7 @@ class DashboardController extends Controller
             ->orderBy('nomor_antrian', 'asc')
             ->limit(5)
             ->get()
-            ->map(fn ($a) => [
+            ->map(fn($a) => [
                 'id' => $a->id,
                 'nomor_antrian' => $a->nomor_antrian,
                 'nama_pasien' => $a->pasien?->nama_lengkap ?? '-',
@@ -278,7 +278,7 @@ class DashboardController extends Controller
 
     private function getChartDokter($dokter)
     {
-        if (! $dokter) {
+        if (!$dokter) {
             return collect();
         }
 
@@ -304,7 +304,7 @@ class DashboardController extends Controller
 
     private function getChartStatusDokter($dokter)
     {
-        if (! $dokter) {
+        if (!$dokter) {
             return collect();
         }
 
@@ -313,7 +313,7 @@ class DashboardController extends Controller
             ->whereDate('created_at', now()->toDateString())
             ->groupBy('status')
             ->get()
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'name' => match ($item->status) {
                     'menunggu' => 'Menunggu',
                     'diproses' => 'Sedang Diperiksa',
@@ -336,8 +336,8 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'asc')
             ->limit(5)
             ->get()
-            ->filter(fn ($resep) => in_array($resep->status, ['pending', 'sedang_dibuat']))
-            ->map(fn ($resep) => [
+            ->filter(fn($resep) => in_array($resep->status, ['pending', 'sedang_dibuat']))
+            ->map(fn($resep) => [
                 'id' => $resep->id,
                 'pasien' => $resep->pasien?->nama_lengkap ?? '-',
                 'dokter' => $resep->dokter?->user?->name ?? '-',
@@ -369,7 +369,7 @@ class DashboardController extends Controller
 
     private function getChartStatusResep($user)
     {
-        if (! $user->hasRole('apoteker')) {
+        if (!$user->hasRole('apoteker')) {
             return collect();
         }
 
@@ -385,7 +385,7 @@ class DashboardController extends Controller
             })
             ->groupBy('status')
             ->get()
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'name' => match ($item->status) {
                     'pending' => 'pending',
                     'sedang_dibuat' => 'sedang_dibuat',
@@ -403,7 +403,7 @@ class DashboardController extends Controller
             ->orderBy('stok', 'asc')
             ->limit(5)
             ->get()
-            ->map(fn ($obat) => [
+            ->map(fn($obat) => [
                 'id' => $obat->id,
                 'nama' => $obat->nama_obat,
                 'stok' => $obat->stok,
@@ -416,7 +416,7 @@ class DashboardController extends Controller
 
     private function getKpiAdmin($klinik)
     {
-        if (! $klinik || ! $klinik->id) {
+        if (!$klinik || !$klinik->id) {
             return [
                 'dokter' => 0,
                 'resepsionis' => 0,
@@ -437,11 +437,11 @@ class DashboardController extends Controller
             'dokter' => Dokter::where('klinik_id', $klinik->id)->count(),
 
             'resepsionis' => User::where('klinik_id', $klinik->id)
-                ->whereHas('roles', fn ($q) => $q->where('name', 'resepsionis'))
+                ->whereHas('roles', fn($q) => $q->where('name', 'resepsionis'))
                 ->count(),
 
             'apoteker' => User::where('klinik_id', $klinik->id)
-                ->whereHas('roles', fn ($q) => $q->where('name', 'apoteker'))
+                ->whereHas('roles', fn($q) => $q->where('name', 'apoteker'))
                 ->count(),
 
             'pasien' => Pasien::where('klinik_id', $klinik->id)->count(),
@@ -460,7 +460,7 @@ class DashboardController extends Controller
 
     private function getTrendPendapatan($klinik)
     {
-        if (! $klinik || ! $klinik->id) {
+        if (!$klinik || !$klinik->id) {
             return collect([
                 ['tanggal' => 'Sen', 'total' => 0],
                 ['tanggal' => 'Sel', 'total' => 0],
@@ -539,7 +539,7 @@ class DashboardController extends Controller
             ->orderBy('stok', 'asc')
             ->limit(5)
             ->get()
-            ->map(fn ($obat) => [
+            ->map(fn($obat) => [
                 'id' => $obat->id,
                 'nama' => $obat->nama_obat,
                 'stok' => $obat->stok,
@@ -579,16 +579,24 @@ class DashboardController extends Controller
         $jumlahPasienSekarang = Pasien::count();
         $jumlahTransaksiSekarang = Pembayaran::count();
 
-        // Total minggu lalu (7 hari ke belakang)
+        // Bandingkan 7 hari terakhir dengan 7 hari sebelumnya
         $tanggalMingguLalu = now()->subDays(7);
+        $tanggalDuaMingguLalu = now()->subDays(14);
 
-        $jumlahKlinikLalu = Klinik::where('created_at', '<', $tanggalMingguLalu)->count();
-        $jumlahDokterLalu = Dokter::where('created_at', '<', $tanggalMingguLalu)->count();
-        $jumlahPasienLalu = Pasien::where('created_at', '<', $tanggalMingguLalu)->count();
-        $jumlahTransaksiLalu = Pembayaran::where('created_at', '<', $tanggalMingguLalu)->count();
+        // 7 hari terakhir
+        $jumlahKlinikSekarang = Klinik::whereBetween('created_at', [$tanggalMingguLalu, now()])->count();
+        $jumlahDokterSekarang = Dokter::whereBetween('created_at', [$tanggalMingguLalu, now()])->count();
+        $jumlahPasienSekarang = Pasien::whereBetween('created_at', [$tanggalMingguLalu, now()])->count();
+        $jumlahTransaksiSekarang = Pembayaran::whereBetween('created_at', [$tanggalMingguLalu, now()])->count();
+
+        // 7 hari sebelumnya
+        $jumlahKlinikLalu = Klinik::whereBetween('created_at', [$tanggalDuaMingguLalu, $tanggalMingguLalu])->count();
+        $jumlahDokterLalu = Dokter::whereBetween('created_at', [$tanggalDuaMingguLalu, $tanggalMingguLalu])->count();
+        $jumlahPasienLalu = Pasien::whereBetween('created_at', [$tanggalDuaMingguLalu, $tanggalMingguLalu])->count();
+        $jumlahTransaksiLalu = Pembayaran::whereBetween('created_at', [$tanggalDuaMingguLalu, $tanggalMingguLalu])->count();
 
         // Hitung perubahan persentase
-        $persen = fn ($sekarang, $lalu) => $lalu > 0 ? (($sekarang - $lalu) / $lalu) * 1 : 0;
+        $persen = fn($sekarang, $lalu) => $lalu > 0 ? (($sekarang - $lalu) / $lalu) * 100 : 0;
 
         return [
             'jumlahKlinik' => $jumlahKlinikSekarang,
@@ -703,7 +711,7 @@ class DashboardController extends Controller
             ->where('status', 'dibuka')
             ->latest()
             ->get()               // <-- pakai get() bukan paginate()
-            ->map(fn ($bug) => [
+            ->map(fn($bug) => [
                 'id' => $bug->id,
                 'judul' => $bug->judul,
                 'deskripsi' => $bug->deskripsi,

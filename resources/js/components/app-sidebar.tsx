@@ -15,6 +15,7 @@ import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
+    BarChart3,
     BookPlus,
     Bug,
     ClipboardList,
@@ -72,6 +73,11 @@ export function AppSidebar() {
         },
         { title: 'Pembayaran', href: `${prefix}/pembayaran`, icon: CreditCard },
         {
+            title: 'Laporan Keuangan',
+            href: `${prefix}/laporan-keuangan`,
+            icon: BarChart3,
+        },
+        {
             title: 'Resep Masuk',
             href: `${prefix}/resep-masuk`,
             icon: ClipboardList,
@@ -116,7 +122,7 @@ export function AppSidebar() {
             footer: ['Kelola Admin', 'Bug Reports'],
         },
         admin: {
-            main: ['Dashboard', 'Klinik', 'Tambah Layanan'],
+            main: ['Dashboard', 'Klinik', 'Tambah Layanan', 'Laporan Keuangan'],
             footer: ['Tambah User', 'Bug Reports', 'Pengaturan'],
         },
         resepsionis: {
@@ -200,7 +206,9 @@ export function AppSidebar() {
         },
         {
             title: 'Pembayaran',
-            items: mainNavItems.filter((i) => ['Pembayaran'].includes(i.title)),
+            items: mainNavItems.filter((i) =>
+                ['Pembayaran', 'Laporan Keuangan'].includes(i.title),
+            ),
         },
     ];
 

@@ -190,7 +190,7 @@ export default function Navbar() {
                                                     </Link>
                                                     <button
                                                         onClick={handleLogout}
-                                                        className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                                                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                                     >
                                                         <LogOut size={16} />
                                                         Keluar

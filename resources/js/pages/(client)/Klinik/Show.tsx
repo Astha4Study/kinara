@@ -1,7 +1,9 @@
 import KlinikTab from '@/components/klinik-tab';
 import KlinikLayout from '@/layouts/klinik-layout';
 import { Link, usePage } from '@inertiajs/react';
-import { ArrowLeft, BedDouble, MapPin, Star } from 'lucide-react';
+import 'leaflet/dist/leaflet.css';
+import { ArrowLeft, BedDouble, MapPin } from 'lucide-react';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { route } from 'ziggy-js';
 
 type Klinik = {
@@ -53,14 +55,6 @@ export default function KlinikShowPage() {
                             <ArrowLeft className="h-5 w-5 opacity-90" />
                             <span className="hidden sm:inline">Kembali</span>
                         </button>
-
-                        {/* Rating */}
-                        {klinik.rating !== undefined && (
-                            <div className="absolute top-3 right-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium text-white ring-1 ring-white/20 backdrop-blur-sm transition hover:bg-white/25 hover:ring-white/30">
-                                <Star className="h-5 w-5 text-yellow-400 opacity-90" />
-                                <span>{klinik.rating.toFixed(1)}</span>
-                            </div>
-                        )}
                     </div>
 
                     {/* Content */}
@@ -154,6 +148,63 @@ export default function KlinikShowPage() {
 
                                 {/* Divider */}
                                 <div className="border-t border-gray-100" />
+
+                                {/* Peta Lokasi */}
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-semibold tracking-wide text-gray-500 uppercase">
+                                        Lokasi Klinik
+                                    </h3>
+
+                                    <div className="h-[260px] w-full overflow-hidden rounded-lg border border-gray-200">
+                                        <MapContainer
+                                            center={[
+                                                Number(klinik.latitude) ||
+                                                    -7.7956,
+                                                Number(klinik.longitude) ||
+                                                    110.3695,
+                                            ]} // fallback Yogyakarta
+                                            zoom={15}
+                                            style={{
+                                                height: '100%',
+                                                width: '100%',
+                                            }}
+                                            scrollWheelZoom={false}
+                                        >
+                                            <TileLayer
+                                                attribution="&copy; OpenStreetMap"
+                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            />
+
+                                            <Marker
+                                                position={[
+                                                    Number(klinik.latitude),
+                                                    Number(klinik.longitude),
+                                                ]}
+                                            >
+                                                <Popup>
+                                                    <div className="text-sm font-medium">
+                                                        {klinik.nama_klinik}
+                                                        <br />
+                                                        <span className="text-xs text-gray-500">
+                                                            {klinik.alamat}
+                                                        </span>
+                                                    </div>
+                                                </Popup>
+                                            </Marker>
+                                        </MapContainer>
+                                    </div>
+
+                                    {/* Button Google Maps */}
+                                    <a
+                                        href={`https://www.google.com/maps?q=${klinik.latitude},${klinik.longitude}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                                    >
+                                        <MapPin className="h-4 w-4 text-emerald-600" />
+                                        Buka di Google Maps
+                                    </a>
+                                </div>
 
                                 {/* Jam Operasional */}
                                 {klinik.jam_operasional?.length > 0 && (

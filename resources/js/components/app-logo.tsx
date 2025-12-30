@@ -1,16 +1,9 @@
-import AppLogoIcon from './app-logo-icon';
+import logo from '@/assets/svg/logo.svg';
 
 export default function AppLogo() {
     return (
-        <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                <AppLogoIcon className="size-5 fill-current text-foreground" />
-            </div>
-            <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
-                    Rujukita
-                </span>
-            </div>
-        </>
+        <div className="flex items-center justify-center gap-2">
+            <img src={logo} alt="Logo Kinara" className="h-10 w-auto" />
+        </div>
     );
 }

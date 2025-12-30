@@ -1,3 +1,4 @@
+import { Database } from 'lucide-react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 type Props = {
@@ -9,16 +10,24 @@ type Props = {
 
 // Warna khas apoteker/medis
 const COLORS: Record<string, string> = {
-    'pending': '#22c55e', // hijau terang → identik dengan farmasi, herbal, kesehatan
-    'sedang_dibuat': '#0ea5e9', // biru → profesional, proses berjalan
-    'selesai': '#059669', // hijau emerald lebih pekat → resep selesai, aman
+    pending: '#22c55e', // hijau terang → identik dengan farmasi, herbal, kesehatan
+    sedang_dibuat: '#0ea5e9', // biru → profesional, proses berjalan
+    selesai: '#059669', // hijau emerald lebih pekat → resep selesai, aman
 };
 
 const StatusResepPiechartApoteker = ({ data }: Props) => {
     if (!data || data.length === 0) {
         return (
-            <div className="flex h-full items-center justify-center text-xs text-gray-500">
-                Tidak ada data resep hari ini
+            <div className="flex h-full flex-col items-center justify-center gap-3 px-4 py-8 text-center">
+                <Database className="h-12 w-12 text-emerald-600/60" />
+                <div>
+                    <p className="text-sm font-medium text-gray-700">
+                        Belum ada resep masuk
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                        Resep akan muncul otomatis
+                    </p>
+                </div>
             </div>
         );
     }

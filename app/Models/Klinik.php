@@ -82,9 +82,24 @@ class Klinik extends Model
                         $initials .= strtoupper($word[0]);
                     }
                 }
-                $klinik->kode_klinik = $initials;
+
+                $kode = $initials;
+
+                // Jika sudah ada, tambahkan suffix huruf A-Z
+                $suffix = 'A';
+                while (self::where('kode_klinik', $kode)->exists()) {
+                    $kode = $initials . $suffix;
+
+                    // increment suffix huruf
+                    $suffix++;
+                    if ($suffix > 'Z') {
+                        // kalau sudah lewat Z, tambahkan random huruf lagi
+                        $suffix = chr(rand(65, 90)); // huruf acak A-Z
+                    }
+                }
+
+                $klinik->kode_klinik = $kode;
             }
         });
-
     }
 }

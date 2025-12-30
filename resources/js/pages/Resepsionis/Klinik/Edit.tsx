@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 type Klinik = {
     id: number;
@@ -65,12 +66,15 @@ export default function KlinikEditResepsionis({ klinik }: Props) {
 
         router.put(`/resepsionis/klinik/${klinik.id}`, data, {
             onSuccess: () => {
-                console.log('✅ Data klinik berhasil diperbarui');
+                toast.success('Data klinik berhasil diperbarui', {
+                    description: 'Informasi klinik sudah tersimpan di sistem.',
+                });
             },
             onError: (err) => {
-                console.error('❌ Error:', err);
+                toast.error('Gagal memperbarui data klinik', {
+                    description: 'Periksa kembali data yang diinput.',
+                });
             },
-            // Opsional: tambahkan preserveScroll jika perlu
             preserveScroll: true,
         });
     };

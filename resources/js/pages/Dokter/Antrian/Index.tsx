@@ -40,6 +40,7 @@ export default function AntrianIndexDokter() {
     const filteredAntrian = antrian.filter(
         (a) =>
             a.status !== 'Selesai' &&
+            a.status !== 'Dibatalkan' &&
             ((a.pasien_nama || '')
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase()) ||
@@ -81,7 +82,7 @@ export default function AntrianIndexDokter() {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {filteredAntrian.length > 0 ? (
-                                    filteredAntrian.map((item) => (
+                                    filteredAntrian.map((item, index) => (
                                         <tr
                                             key={item.id}
                                             className="transition hover:bg-gray-50"
@@ -134,28 +135,30 @@ export default function AntrianIndexDokter() {
                                             </td>
 
                                             <td className="px-6 py-4 text-gray-700">
-                                                <Link
-                                                    href={route(
-                                                        'dokter.antrian.update',
-                                                        item.id,
-                                                    )}
-                                                    method="put"
-                                                    as="button"
-                                                    onSuccess={() =>
-                                                        toast.success(
-                                                            'Pasien berhasil ditangani.',
-                                                        )
-                                                    }
-                                                    onError={(errors) =>
-                                                        toast.error(
-                                                            errors?.message ??
-                                                                'Anda masih menangani pasien lain.',
-                                                        )
-                                                    }
-                                                    className="rounded-md bg-emerald-600 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-700"
-                                                >
-                                                    Tangani
-                                                </Link>
+                                                {index === 0 && ( // ✅ hanya baris pertama
+                                                    <Link
+                                                        href={route(
+                                                            'dokter.antrian.update',
+                                                            item.id,
+                                                        )}
+                                                        method="put"
+                                                        as="button"
+                                                        onSuccess={() =>
+                                                            toast.success(
+                                                                'Pasien berhasil ditangani.',
+                                                            )
+                                                        }
+                                                        onError={(errors) =>
+                                                            toast.error(
+                                                                errors?.message ??
+                                                                    'Anda masih menangani pasien lain.',
+                                                            )
+                                                        }
+                                                        className="rounded-md bg-emerald-600 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-700"
+                                                    >
+                                                        Tangani
+                                                    </Link>
+                                                )}
                                             </td>
                                         </tr>
                                     ))
