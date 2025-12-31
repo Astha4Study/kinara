@@ -59,8 +59,9 @@ export default function TindakanCreateDokter({
     } = useCatatanLayananStore();
 
     const [butuhResep, setButuhResep] = React.useState<boolean>(
-        data.butuh_resep,
+        punya_apoteker === false ? false : data.butuh_resep,
     );
+
     const [confirmOpen, setConfirmOpen] = React.useState(false);
     const [confirmNoResepOpen, setConfirmNoResepOpen] = React.useState(false);
 
@@ -89,6 +90,13 @@ export default function TindakanCreateDokter({
     useEffect(() => {
         setData('butuh_resep', butuhResep);
     }, [butuhResep]);
+
+    useEffect(() => {
+        if (punya_apoteker === false) {
+            setButuhResep(false);
+            setData('butuh_resep', false);
+        }
+    }, [punya_apoteker]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

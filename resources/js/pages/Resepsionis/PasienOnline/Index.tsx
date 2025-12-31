@@ -94,6 +94,10 @@ export default function PasienOnlineIndexResepsionis() {
         ? pasienOnline
         : (pasienOnline.data ?? []);
 
+    const totalPending = pasienList.filter(
+        (p) => p.status === 'pending',
+    ).length;
+
     const filteredPasien = pasienList.filter(
         (p) =>
             p.status === 'pending' &&
@@ -208,7 +212,7 @@ export default function PasienOnlineIndexResepsionis() {
 
                 {/* Footer */}
                 <div className="mt-4 text-sm text-gray-600">
-                    Menampilkan {filteredPasien.length} dari {pasienList.length}{' '}
+                    Menampilkan {filteredPasien.length} dari {totalPending}{' '}
                     pasien online
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Clock, MapPin, Users } from 'lucide-react';
+import { Clock, MapPin, Star, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type Koordinat = { lat: number; lng: number };
@@ -168,6 +168,14 @@ const KlinikListAside = ({ kliniks }: Props) => {
                     >
                         {/* Image */}
                         <div className="relative h-48 w-60 shrink-0">
+                            {/* Rating Badge */}
+                            {klinik.rating !== undefined && (
+                                <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
+                                    <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                                    {klinik.rating.toFixed(1)}
+                                </div>
+                            )}
+
                             <img
                                 src={klinik.gambar ?? '/placeholder-image.jpg'}
                                 alt={klinik.nama_klinik}

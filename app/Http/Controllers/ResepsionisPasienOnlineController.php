@@ -14,7 +14,10 @@ class ResepsionisPasienOnlineController extends Controller
      */
     public function index()
     {
+        $klinikId = auth()->user()->klinik_id;
+
         $pasienOnline = PasienOnline::with('klinik')
+            ->where('klinik_id', $klinikId)
             ->latest()
             ->paginate(10);
 
@@ -69,7 +72,7 @@ class ResepsionisPasienOnlineController extends Controller
         $validated = $request->validate([
             'status' => 'required|in:pending,terverifikasi,ditolak',
             'nama_lengkap' => 'required|string|max:255',
-            'nik' => 'required|string|max:16|unique:pasien_online,nik,'.$pasienOnline->id,
+            'nik' => 'required|string|max:16|unique:pasien_online,nik,' . $pasienOnline->id,
             'jenis_kelamin' => 'required|in:L,P',
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'nullable|string|max:255',

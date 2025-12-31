@@ -144,7 +144,7 @@ const HeroSection = () => {
                     className="absolute inset-0 h-full w-full object-cover"
                     loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black/35" />
+                <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/60 via-black/40 to-transparent transition-opacity duration-700 ease-in-out" />
 
                 {weather !== 'unknown' && (
                     <div className="absolute top-3 right-3 z-30">

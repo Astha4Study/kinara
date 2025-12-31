@@ -2,7 +2,7 @@ import KlinikTab from '@/components/klinik-tab';
 import KlinikLayout from '@/layouts/klinik-layout';
 import { Link, usePage } from '@inertiajs/react';
 import 'leaflet/dist/leaflet.css';
-import { ArrowLeft, BedDouble, MapPin } from 'lucide-react';
+import { ArrowLeft, BedDouble, MapPin, Star } from 'lucide-react';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { route } from 'ziggy-js';
 
@@ -45,6 +45,14 @@ export default function KlinikShowPage() {
                         />
 
                         <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/70 via-black/40 to-transparent" />
+
+                        {/* Rating Badge */}
+                        {klinik.rating !== undefined && (
+                            <div className="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
+                                <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                                {klinik.rating.toFixed(1)}
+                            </div>
+                        )}
 
                         {/* Back Button */}
                         <button

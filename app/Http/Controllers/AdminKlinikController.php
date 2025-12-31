@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fasilitas;
-use App\Models\klinik;
+use App\Models\Klinik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -99,7 +99,7 @@ class AdminKlinikController extends Controller
         }
 
         if ($request->filled('jam_operasional')) {
-            $openDays = collect($request->jam_operasional)->filter(fn ($jam) => ! ($jam['tutup'] ?? false));
+            $openDays = collect($request->jam_operasional)->filter(fn($jam) => !($jam['tutup'] ?? false));
             if ($openDays->isEmpty()) {
                 return back()
                     ->withErrors(['jam_operasional' => 'Minimal 1 hari harus buka'])
@@ -116,7 +116,7 @@ class AdminKlinikController extends Controller
             }
         }
 
-        if (! $user->klinik_id) {
+        if (!$user->klinik_id) {
             $user->update(['klinik_id' => $klinik->id]);
         }
 
@@ -188,7 +188,7 @@ class AdminKlinikController extends Controller
 
         // 2. Validasi sederhana: hanya cek jika tidak tutup
         if ($request->filled('jam_operasional')) {
-            $openDays = collect($request->jam_operasional)->filter(fn ($jam) => ! ($jam['tutup'] ?? false));
+            $openDays = collect($request->jam_operasional)->filter(fn($jam) => !($jam['tutup'] ?? false));
             if ($openDays->isEmpty()) {
                 return back()
                     ->withErrors(['jam_operasional' => 'Minimal 1 hari harus buka'])

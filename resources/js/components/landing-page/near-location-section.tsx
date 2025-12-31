@@ -126,10 +126,10 @@ const NearLocationSection = ({ kliniks }: Props) => {
                                         className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                     />
 
-                                    {/* Rating badge di kanan atas */}
-                                    <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-2 py-1 text-sm font-semibold text-gray-900 shadow">
-                                        <Star className="h-3.5 w-3.5 text-yellow-500" />
-                                        {rating}
+                                    {/* Rating badge */}
+                                    <div className="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
+                                        <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                                        {rating.toFixed(1)}
                                     </div>
                                 </div>
 
@@ -206,7 +206,7 @@ const NearLocationSection = ({ kliniks }: Props) => {
                                     </div>
 
                                     {/* CTA */}
-                                    <div className="pt-2 mt-auto">
+                                    <div className="mt-auto pt-2">
                                         <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 transition group-hover:gap-2">
                                             Lihat Detail
                                             <ArrowRight className="h-4 w-4" />
