@@ -48,8 +48,6 @@ Route::get('/cari-klinik', [ClientCariKlinikPageController::class, 'index']);
 Route::get('/untuk-klinik', [UntukKlinikController::class, 'index']);
 Route::get('/tentang-kami', [TentangKamiPageController::class, 'index']);
 Route::get('/kontak-kami', [KontakKamiPageController::class, 'index']);
-Route::get('/profile', [ClientProfileController::class, 'profileIndex'])->name('profile.ProfileIndex');
-Route::get('/riwayat', [ClientProfileController::class, 'riwayatIndex'])->name('profile.riwayatIndex');
 
 Route::get('/klinik/{slug}', [ClientKlinikController::class, 'show'])
     ->name('klinik.detail');
@@ -59,10 +57,17 @@ Route::post('/klinik/{slug}/daftar-online', [ClientPasienOnlineController::class
     ->name('daftar-online.store');
 Route::get('/klinik/{slug}/daftar-online/{pasienOnline}', [ClientPasienOnlineController::class, 'success'])
     ->name('daftar-online.success');
-Route::get('/profile/edit', [ClientProfileController::class, 'edit'])
-    ->name('profile.edit');
-Route::put('/profile', [ClientProfileController::class, 'update'])
-    ->name('profile.update');
+
+Route::prefix('settings')->group(function () {
+    Route::get('/profile', [ClientProfileController::class, 'profileIndex'])
+        ->name('settings.profile.index');
+
+    Route::get('/profile/edit', [ClientProfileController::class, 'edit'])
+        ->name('settings.profile.edit');
+
+    Route::put('/profile', [ClientProfileController::class, 'update'])
+        ->name('settings.profile.update');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth', 'verified']);

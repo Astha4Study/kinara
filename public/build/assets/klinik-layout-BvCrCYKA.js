@@ -1,1 +1,0 @@
-import{j as r}from"./app-Ocq4icyJ.js";import{N as e}from"./navbar-BMBswV6P.js";function t({children:s}){return r.jsxs("div",{className:"flex min-h-screen flex-col bg-white",children:[r.jsx(e,{}),s]})}export{t as K};
