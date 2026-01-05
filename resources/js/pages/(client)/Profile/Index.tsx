@@ -1,7 +1,8 @@
 import SidebarProfile from '@/components/sidebar-profile';
 import KlinikLayout from '@/layouts/klinik-layout';
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { MapPin, Pencil } from 'lucide-react';
+import { route } from 'ziggy-js';
 
 type UserType = {
     id: number;
@@ -25,7 +26,7 @@ export default function ProfileIndexPage() {
                 {/* Kontainer utama */}
                 <div className="w-full max-w-7xl">
                     <h1 className="mb-6 text-start text-2xl font-semibold text-gray-900">
-                        Account Settings
+                        Pengaturan Profil
                     </h1>
 
                     <div className="grid grid-cols-1 gap-3 lg:grid-cols-[260px_1fr]">
@@ -40,11 +41,14 @@ export default function ProfileIndexPage() {
                                     <div className="flex items-center gap-4">
                                         <img
                                             src={
-                                                user.avatar ??
-                                                `https://ui-avatars.com/api/?name=${user.name}`
+                                                user.avatar
+                                                    ? `/storage/${user.avatar}`
+                                                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                          user.name,
+                                                      )}&size=256&background=E5E7EB&color=111827&bold=true`
                                             }
                                             alt={user.name}
-                                            className="h-16 w-16 rounded-full object-cover"
+                                            className="h-16 w-16 rounded-full object-cover ring-1 ring-gray-200"
                                         />
 
                                         <div>
@@ -63,10 +67,13 @@ export default function ProfileIndexPage() {
                                         </div>
                                     </div>
 
-                                    <button className="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    <Link
+                                        href={route('profile.edit')}
+                                        className="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    >
                                         <Pencil className="h-4 w-4" />
                                         Edit
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
 

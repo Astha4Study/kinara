@@ -38,7 +38,7 @@ export default function KlinikTab({ deskripsi, rating }: KlinikTabsProps) {
                         Kebijakan
                     </button>
 
-                    <button
+                    {/* <button
                         onClick={() => setActiveTab('review')}
                         className={`pb-3 transition ${
                             activeTab === 'review'
@@ -47,7 +47,7 @@ export default function KlinikTab({ deskripsi, rating }: KlinikTabsProps) {
                         }`}
                     >
                         Ulasan
-                    </button>
+                    </button> */}
                 </nav>
             </div>
 

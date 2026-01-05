@@ -17,7 +17,6 @@ use App\Http\Controllers\ClientCariKlinikPageController;
 use App\Http\Controllers\ClientKlinikController;
 use App\Http\Controllers\ClientPasienOnlineController;
 use App\Http\Controllers\ClientProfileController;
-use App\Http\Controllers\ClientRiwayatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DokterAntrianController;
 use App\Http\Controllers\DokterCatatanLayananController;
@@ -60,6 +59,10 @@ Route::post('/klinik/{slug}/daftar-online', [ClientPasienOnlineController::class
     ->name('daftar-online.store');
 Route::get('/klinik/{slug}/daftar-online/{pasienOnline}', [ClientPasienOnlineController::class, 'success'])
     ->name('daftar-online.success');
+Route::get('/profile/edit', [ClientProfileController::class, 'edit'])
+    ->name('profile.edit');
+Route::put('/profile', [ClientProfileController::class, 'update'])
+    ->name('profile.update');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth', 'verified']);
@@ -191,5 +194,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

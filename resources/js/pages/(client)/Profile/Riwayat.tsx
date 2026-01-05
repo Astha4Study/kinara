@@ -3,7 +3,6 @@ import {
     AlertDialog,
     AlertDialogCancel,
     AlertDialogContent,
-    AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
@@ -42,73 +41,88 @@ export default function RiwayatIndexPage() {
                         <SidebarProfile />
 
                         {/* MAIN CONTENT */}
-                        <main className="space-y-6">
-                            <div className="rounded-xl border bg-white p-6 shadow-sm">
-                                {riwayat.length === 0 ? (
-                                    <div className="text-center text-sm text-gray-500">
-                                        Belum ada riwayat pendaftaran.
-                                    </div>
-                                ) : (
-                                    <ul className="divide-y">
-                                        {riwayat.map((item) => (
-                                            <li
-                                                key={item.id}
-                                                className="flex items-start justify-between gap-4 py-4"
-                                            >
-                                                {/* Info kiri */}
-                                                <div className="space-y-1">
-                                                    <p className="text-sm font-semibold text-gray-900">
-                                                        {item.klinik ??
-                                                            'Nama klinik tidak tersedia'}
-                                                    </p>
-                                                    <p className="flex items-center gap-1 text-xs text-gray-500">
-                                                        <Calendar className="h-3.5 w-3.5" />
-                                                        {item.tanggal}
-                                                    </p>
+                        <main className="rounded-2xl border bg-white p-6">
+                            {riwayat.length === 0 ? (
+                                <div className="py-12 text-center">
+                                    <p className="text-sm font-medium text-gray-500">
+                                        Belum ada riwayat pendaftaran
+                                    </p>
+                                    <p className="mt-1 text-xs text-gray-400">
+                                        Riwayat pendaftaran kamu akan muncul di
+                                        sini
+                                    </p>
+                                </div>
+                            ) : (
+                                <ul className="space-y-3">
+                                    {riwayat.map((item) => (
+                                        <li
+                                            key={item.id}
+                                            className="flex items-start justify-between gap-4 rounded-xl border bg-white p-4 transition hover:bg-gray-50"
+                                        >
+                                            {/* Info kiri */}
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-semibold text-gray-900">
+                                                    {item.klinik ??
+                                                        'Nama klinik tidak tersedia'}
+                                                </p>
+                                                <div className="flex items-center gap-1 text-xs text-gray-500">
+                                                    <Calendar className="h-3.5 w-3.5" />
+                                                    <span>{item.tanggal}</span>
                                                 </div>
+                                            </div>
 
-                                                {/* Status kanan + tombol */}
-                                                <div className="flex items-center gap-3">
-                                                    <StatusBadge
-                                                        status={item.status}
-                                                    />
+                                            {/* Status + Action */}
+                                            <div className="flex items-center gap-3">
+                                                <StatusBadge
+                                                    status={item.status}
+                                                />
 
-                                                    {/* Tombol untuk lihat nomor pendaftaran */}
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger
-                                                            asChild
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="rounded-full px-4"
                                                         >
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                            >
-                                                                Lihat Nomor
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>
-                                                                    Nomor
-                                                                    Pendaftaran
-                                                                </AlertDialogTitle>
-                                                                <AlertDialogDescription>
+                                                            Lihat Nomor
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+
+                                                    <AlertDialogContent className="max-w-sm rounded-2xl p-6">
+                                                        <AlertDialogHeader className="items-center space-y-4">
+                                                            <AlertDialogTitle className="text-sm font-medium text-gray-500">
+                                                                Nomor
+                                                                Pendaftaran
+                                                            </AlertDialogTitle>
+
+                                                            {/* Nomor sebagai hero */}
+                                                            <div className="rounded-xl bg-gray-50 px-6 py-4">
+                                                                <p className="text-3xl font-bold tracking-wider text-gray-900">
                                                                     {item.nomor_pendaftaran ??
-                                                                        'Nomor tidak tersedia'}
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>
-                                                                    Tutup
-                                                                </AlertDialogCancel>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
+                                                                        '—'}
+                                                                </p>
+                                                            </div>
+
+                                                            <p className="text-xs text-gray-400">
+                                                                Harap simpan
+                                                                nomor ini untuk
+                                                                keperluan
+                                                                administrasi
+                                                            </p>
+                                                        </AlertDialogHeader>
+
+                                                        <AlertDialogFooter className="mt-6">
+                                                            <AlertDialogCancel className="w-full rounded-xl">
+                                                                Tutup
+                                                            </AlertDialogCancel>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </main>
                     </div>
                 </div>
@@ -122,21 +136,21 @@ export default function RiwayatIndexPage() {
 ===================== */
 const StatusBadge = ({ status }: { status: string }) => {
     switch (status) {
-        case 'menunggu':
+        case 'pending':
             return (
                 <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-700">
                     <Clock className="h-3.5 w-3.5" />
                     Menunggu
                 </span>
             );
-        case 'dikonfirmasi':
+        case 'terverifikasi':
             return (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Dikonfirmasi
                 </span>
             );
-        case 'dibatalkan':
+        case 'ditolak':
             return (
                 <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
                     <XCircle className="h-3.5 w-3.5" />

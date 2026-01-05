@@ -127,10 +127,10 @@ const NearLocationSection = ({ kliniks }: Props) => {
                                     />
 
                                     {/* Rating badge */}
-                                    <div className="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
+                                    {/* <div className="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
                                         <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                                         {rating.toFixed(1)}
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 {/* CONTENT */}

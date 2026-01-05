@@ -13,57 +13,28 @@ class FasilitasSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('fasilitas')->insert([
-            [
-                'nama' => 'Ruang Ber AC',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'BPJS',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Parkir Luas',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Ambulans 24 Jam',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Laboratorium',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Apotek',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Ruang Tunggu Nyaman',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Wifi Gratis',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Dokter Spesialis',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama' => 'Kantin Sehat',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+        $fasilitas = [
+            'Ruang Ber AC',
+            'BPJS',
+            'Parkir Luas',
+            'Ambulans 24 Jam',
+            'Laboratorium',
+            'Apotek',
+            'Ruang Tunggu Nyaman',
+            'Wifi Gratis',
+            'Dokter Spesialis',
+            'Kantin Sehat',
+        ];
+
+        foreach ($fasilitas as $nama) {
+            DB::table('fasilitas')->updateOrInsert(
+                ['nama' => $nama], // kondisi unik
+                [
+                    'nama' => $nama,
+                    'updated_at' => Carbon::now(),
+                    'created_at' => Carbon::now(),
+                ]
+            );
+        }
     }
 }

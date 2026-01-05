@@ -17,6 +17,7 @@ type UserType = {
     id: number;
     name: string;
     email: string;
+    avatar?: string | null;
 };
 
 type PageProps = {
@@ -55,6 +56,11 @@ export default function Navbar() {
     const canAccessDashboard = roles.some((role) =>
         allowedRoles.includes(role),
     );
+
+    const getAvatarUrl = (user: UserType) => {
+        if (!user.avatar) return null;
+        return `/storage/${user.avatar}`;
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -163,10 +169,25 @@ export default function Navbar() {
                                             className="flex items-center gap-2 rounded-lg px-4 py-2 hover:bg-gray-50"
                                         >
                                             <Avatar className="h-8 w-8">
-                                                <AvatarFallback className="bg-emerald-600 text-sm text-white">
-                                                    {getInitials(user.name)}
-                                                </AvatarFallback>
+                                                {user.avatar ? (
+                                                    <img
+                                                        src={`/storage/${user.avatar}`}
+                                                        alt={user.name}
+                                                        className="h-full w-full rounded-full object-cover"
+                                                        loading="lazy"
+                                                        onError={(e) =>
+                                                            (e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                                user.name,
+                                                            )}&size=128`)
+                                                        }
+                                                    />
+                                                ) : (
+                                                    <AvatarFallback className="bg-emerald-600 text-sm font-medium text-white">
+                                                        {getInitials(user.name)}
+                                                    </AvatarFallback>
+                                                )}
                                             </Avatar>
+
                                             <div className="hidden text-left xl:block">
                                                 <p className="text-sm font-medium text-gray-800">
                                                     Hai, {user.name}
@@ -278,9 +299,22 @@ export default function Navbar() {
                     {isLoggedIn && (
                         <div className="flex items-center gap-3 border-b px-4 py-4">
                             <Avatar className="h-10 w-10">
-                                <AvatarFallback className="bg-emerald-600 text-sm font-medium text-white">
-                                    {getInitials(user.name)}
-                                </AvatarFallback>
+                                {user.avatar ? (
+                                    <img
+                                        src={`/storage/${user.avatar}`}
+                                        alt={user.name}
+                                        className="h-full w-full rounded-full object-cover"
+                                        onError={(e) =>
+                                            (e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                user.name,
+                                            )}&size=128`)
+                                        }
+                                    />
+                                ) : (
+                                    <AvatarFallback className="bg-emerald-600 text-sm font-medium text-white">
+                                        {getInitials(user.name)}
+                                    </AvatarFallback>
+                                )}
                             </Avatar>
 
                             <div className="flex-1">
